@@ -31,3 +31,4 @@ Admin
 4. Reject booking with information -> send notification
 5. Send proof of payment
 6. View users - with their bookings
+7.  testing
