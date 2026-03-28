@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>global-pass</groupId>
-    <artifactId>global-pass</artifactId>
+    <artifactId>global-pass-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name/>
     <description/>
