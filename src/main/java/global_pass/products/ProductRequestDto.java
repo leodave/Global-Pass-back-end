@@ -1,4 +1,4 @@
-package global_pass.global_pass.products;
+package global_pass.products;
 
 import lombok.Builder;
 import lombok.Data;
