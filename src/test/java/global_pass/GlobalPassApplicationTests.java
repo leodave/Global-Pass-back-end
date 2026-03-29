@@ -1,4 +1,4 @@
-package global_pass.global_pass;
+package global_pass;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

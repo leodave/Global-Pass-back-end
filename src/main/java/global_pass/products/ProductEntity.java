@@ -1,4 +1,4 @@
-package global_pass.global_pass.products;
+package global_pass.products;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
