@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+// Safe output sent to client — password is never included
 @Data
 @Builder
 public class UserResponseDto {

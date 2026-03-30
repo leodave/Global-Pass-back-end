@@ -8,14 +8,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Handles all user-related HTTP requests
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    // --- Auth endpoints (public) ---
+    // --- Public auth endpoints ---
 
+    // POST /api/auth/signup — register a new user
     @PostMapping("/api/auth/signup")
     public ResponseEntity<ApiResponse<UserResponseDto>> signup(@Valid @RequestBody SignupRequestDto request) {
         UserResponseDto user = userService.signup(request);
@@ -26,6 +28,7 @@ public class UserController {
                 .build());
     }
 
+    // POST /api/auth/login — authenticate user with email & password
     @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse<UserResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
         UserResponseDto user = userService.login(request);
@@ -36,8 +39,9 @@ public class UserController {
                 .build());
     }
 
-    // --- User endpoints (protected — will require JWT later) ---
+    // --- Protected user endpoints (will require JWT later) ---
 
+    // GET /api/users/{id} — get user profile by id
     @GetMapping("/api/users/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> getUser(@PathVariable Long id) {
         UserResponseDto user = userService.getUserById(id);
@@ -48,6 +52,7 @@ public class UserController {
                 .build());
     }
 
+    // PUT /api/users/{id} — update user name and email
     @PutMapping("/api/users/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequestDto request) {
         UserResponseDto user = userService.updateUser(id, request);
@@ -58,6 +63,7 @@ public class UserController {
                 .build());
     }
 
+    // PUT /api/users/{id}/password — change password (requires old password)
     @PutMapping("/api/users/{id}/password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDto request) {
         userService.changePassword(id, request);
@@ -67,8 +73,9 @@ public class UserController {
                 .build());
     }
 
-    // --- Admin endpoints (protected — admin only later) ---
+    // --- Admin endpoints (will require admin role later) ---
 
+    // GET /api/users — get all users (admin only)
     @GetMapping("/api/users")
     public ResponseEntity<ApiResponse<List<UserResponseDto>>> getAllUsers() {
         List<UserResponseDto> users = userService.getAllUsers();

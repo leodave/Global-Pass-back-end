@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+// Input for changing password — requires old password for verification
 @Data
 public class ChangePasswordRequestDto {
 

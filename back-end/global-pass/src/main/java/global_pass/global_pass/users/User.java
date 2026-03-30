@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+// User entity — maps to "users" table in the database
 @Entity
 @Table(name = "users")
 @Data
@@ -23,22 +24,28 @@ public class User {
     @NotBlank
     private String name;
 
+    // Unique email — used for login
     @Email
     @NotBlank
     @Column(unique = true)
     private String email;
 
+    // Stored as BCrypt hash, never exposed in responses
     @NotBlank
     private String password;
 
+    // Default role is USER, admin is assigned manually
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
+    // Used to deactivate account without deleting
     private boolean active = true;
 
+    // Auto-set on creation
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    // Auto-updated on every save
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
