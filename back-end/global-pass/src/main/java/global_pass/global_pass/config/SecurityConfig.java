@@ -29,6 +29,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Allow signup and login without authentication
                 .requestMatchers("/api/auth/**").permitAll()
+                // TODO: protect these with JWT later
+                .requestMatchers("/api/users/**").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             );
