@@ -1,4 +1,4 @@
-package global_pass.global_pass.config;
+package global_pass.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

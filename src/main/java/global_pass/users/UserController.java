@@ -1,4 +1,4 @@
-package global_pass.global_pass.users;
+package global_pass.users;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

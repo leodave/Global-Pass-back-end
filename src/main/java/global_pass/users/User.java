@@ -1,4 +1,4 @@
-package global_pass.global_pass.users;
+package global_pass.users;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

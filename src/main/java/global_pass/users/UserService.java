@@ -1,4 +1,4 @@
-package global_pass.global_pass.users;
+package global_pass.users;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

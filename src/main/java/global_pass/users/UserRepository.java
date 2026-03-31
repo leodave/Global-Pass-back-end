@@ -1,4 +1,4 @@
-package global_pass.global_pass.users;
+package global_pass.users;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;

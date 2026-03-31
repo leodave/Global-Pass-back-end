@@ -1,9 +1,9 @@
-package global_pass.global_pass.exception;
+package global_pass.exception;
 
-import global_pass.global_pass.users.ApiResponse;
-import global_pass.global_pass.users.EmailAlreadyExistsException;
-import global_pass.global_pass.users.InvalidPasswordException;
-import global_pass.global_pass.users.UserNotFoundException;
+import global_pass.users.ApiResponse;
+import global_pass.users.EmailAlreadyExistsException;
+import global_pass.users.InvalidPasswordException;
+import global_pass.users.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
