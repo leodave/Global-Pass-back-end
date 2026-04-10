@@ -1,0 +1,367 @@
+{
+  "info": {
+    "name": "Global Pass - Products API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /products",
+      "item": [
+        {
+          "name": "Get All Products - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /products/{id}",
+      "item": [
+        {
+          "name": "Get Product By Id - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "{{product_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Product By Id - Not Found 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/non-existing-uuid",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "non-existing-uuid"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST /products",
+      "item": [
+        {
+          "name": "Create Product - Success 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\",\n  \"otherDetails\": \"4K plan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Missing Name 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Name Too Short 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"a\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Invalid Page Link 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"not-a-valid-url\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Invalid Currency Length 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USDD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Negative Amount 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": -5.00,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Missing Login Username 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Missing Login Password 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix\",\n  \"description\": \"Streaming service\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product - Malformed JSON 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ this is not valid json }"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "PUT /products/{id}",
+      "item": [
+        {
+          "name": "Update Product - Success 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix Premium\",\n  \"description\": \"Streaming HD\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"newuser@mail.com\",\n  \"loginPassword\": \"newSecret\",\n  \"amount\": 22.99,\n  \"currency\": \"EUR\",\n  \"otherDetails\": \"8K plan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "{{product_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Product - Not Found 404",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Netflix Premium\",\n  \"description\": \"Streaming HD\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"newuser@mail.com\",\n  \"loginPassword\": \"newSecret\",\n  \"amount\": 22.99,\n  \"currency\": \"EUR\",\n  \"otherDetails\": \"8K plan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/non-existing-uuid",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "non-existing-uuid"]
+            }
+          }
+        },
+        {
+          "name": "Update Product - Invalid Request 400",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"pageLink\": \"https://netflix.com\",\n  \"loginUsername\": \"user@mail.com\",\n  \"loginPassword\": \"secret123\",\n  \"amount\": 15.99,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "{{product_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELETE /products/{id}",
+      "item": [
+        {
+          "name": "Delete Product - Success 204",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "{{product_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product - Not Found 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/non-existing-uuid",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "non-existing-uuid"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product - Already Deleted 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["public", "api", "v1", "products", "{{product_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "product_id",
+      "value": "replace-with-real-id"
+    }
+  ]
+}
