@@ -1,6 +1,5 @@
-package global_pass.users;
+package global_pass.exception;
 
-// Thrown when user is not found by id or email — returns 404
 public class UserNotFoundException extends RuntimeException {
 
     public UserNotFoundException(String message) {

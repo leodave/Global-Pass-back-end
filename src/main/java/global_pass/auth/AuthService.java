@@ -1,0 +1,45 @@
+package global_pass.auth;
+
+import global_pass.exception.EmailAlreadyExistsException;
+import global_pass.exception.InvalidPasswordException;
+import global_pass.exception.UserNotFoundException;
+import global_pass.users.User;
+import global_pass.users.UserMapper;
+import global_pass.users.UserRepository;
+import global_pass.users.UserResponseDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+
+    public UserResponseDto signup(SignupRequestDto request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException(request.getEmail());
+        }
+        User user = userMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        User saved = userRepository.save(user);
+        log.info("User signed up: {}", saved.getEmail());
+        return userMapper.toResponseDto(saved);
+    }
+
+    public UserResponseDto login(LoginRequestDto request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.warn("Failed login attempt for: {}", request.getEmail());
+            throw new InvalidPasswordException();
+        }
+        log.info("User logged in: {}", user.getEmail());
+        return userMapper.toResponseDto(user);
+    }
+}

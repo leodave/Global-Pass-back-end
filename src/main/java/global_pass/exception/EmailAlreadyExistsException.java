@@ -1,6 +1,5 @@
-package global_pass.users;
+package global_pass.exception;
 
-// Thrown when signup/update uses an email that already exists — returns 409
 public class EmailAlreadyExistsException extends RuntimeException {
 
     public EmailAlreadyExistsException(String email) {

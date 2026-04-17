@@ -1,5 +1,6 @@
 package global_pass.users;
 
+import global_pass.auth.SignupRequestDto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +54,6 @@ class UserMapperTest {
 
         UserResponseDto dto = userMapper.toResponseDto(user);
 
-        // ResponseDto has no password field — this test ensures it stays that way
         assertNotNull(dto);
         assertEquals("John", dto.getName());
     }

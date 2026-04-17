@@ -7,7 +7,7 @@ import lombok.Data;
 // Example: { "status": 200, "message": "Login successful", "data": {...} }
 @Data
 @Builder
-public class ApiResponse<T> {
+public class UserApiResponseDto<T> {
 
     private int status;
     private String message;

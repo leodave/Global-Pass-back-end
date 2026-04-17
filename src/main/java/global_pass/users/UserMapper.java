@@ -1,12 +1,11 @@
 package global_pass.users;
 
+import global_pass.auth.SignupRequestDto;
 import org.springframework.stereotype.Component;
 
-// Converts between User entity and DTOs — keeps entity hidden from client
 @Component
 public class UserMapper {
 
-    // SignupRequestDto → User entity (password will be hashed in service)
     public User toEntity(SignupRequestDto dto) {
         User user = new User();
         user.setName(dto.getName());
@@ -15,7 +14,6 @@ public class UserMapper {
         return user;
     }
 
-    // User entity → UserResponseDto (password is never included)
     public UserResponseDto toResponseDto(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())

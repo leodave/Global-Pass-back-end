@@ -1,6 +1,5 @@
-package global_pass.users;
+package global_pass.exception;
 
-// Thrown when login/change-password has wrong password — returns 401
 public class InvalidPasswordException extends RuntimeException {
 
     public InvalidPasswordException() {

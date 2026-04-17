@@ -1,11 +1,10 @@
-package global_pass.users;
+package global_pass.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-// Input for user registration
 @Data
 public class SignupRequestDto {
 

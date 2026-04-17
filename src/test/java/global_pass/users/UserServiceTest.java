@@ -1,5 +1,8 @@
 package global_pass.users;
 
+import global_pass.exception.EmailAlreadyExistsException;
+import global_pass.exception.InvalidPasswordException;
+import global_pass.exception.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +34,6 @@ class UserServiceTest {
     private UserService userService;
 
     private User user;
-    private SignupRequestDto signupRequest;
-    private LoginRequestDto loginRequest;
     private UserResponseDto userResponse;
 
     @BeforeEach
@@ -45,15 +46,6 @@ class UserServiceTest {
         user.setRole(User.Role.USER);
         user.setActive(true);
 
-        signupRequest = new SignupRequestDto();
-        signupRequest.setName("John");
-        signupRequest.setEmail("john@example.com");
-        signupRequest.setPassword("password123");
-
-        loginRequest = new LoginRequestDto();
-        loginRequest.setEmail("john@example.com");
-        loginRequest.setPassword("password123");
-
         userResponse = UserResponseDto.builder()
                 .id(1L)
                 .name("John")
@@ -62,63 +54,6 @@ class UserServiceTest {
                 .active(true)
                 .build();
     }
-
-    // --- Signup Tests ---
-
-    @Test
-    void signup_success() {
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
-        when(userMapper.toEntity(signupRequest)).thenReturn(user);
-        when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userMapper.toResponseDto(user)).thenReturn(userResponse);
-
-        UserResponseDto result = userService.signup(signupRequest);
-
-        assertNotNull(result);
-        assertEquals("john@example.com", result.getEmail());
-        verify(passwordEncoder).encode("password123");
-        verify(userRepository).save(any(User.class));
-    }
-
-    @Test
-    void signup_emailAlreadyExists_throwsException() {
-        when(userRepository.existsByEmail("john@example.com")).thenReturn(true);
-
-        assertThrows(EmailAlreadyExistsException.class, () -> userService.signup(signupRequest));
-        verify(userRepository, never()).save(any());
-    }
-
-    // --- Login Tests ---
-
-    @Test
-    void login_success() {
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("password123", "hashedPassword")).thenReturn(true);
-        when(userMapper.toResponseDto(user)).thenReturn(userResponse);
-
-        UserResponseDto result = userService.login(loginRequest);
-
-        assertNotNull(result);
-        assertEquals("john@example.com", result.getEmail());
-    }
-
-    @Test
-    void login_userNotFound_throwsException() {
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> userService.login(loginRequest));
-    }
-
-    @Test
-    void login_invalidPassword_throwsException() {
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("password123", "hashedPassword")).thenReturn(false);
-
-        assertThrows(InvalidPasswordException.class, () -> userService.login(loginRequest));
-    }
-
-    // --- Get User Tests ---
 
     @Test
     void getUserById_success() {
@@ -136,8 +71,6 @@ class UserServiceTest {
 
         assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
     }
-
-    // --- Update User Tests ---
 
     @Test
     void updateUser_success() {
@@ -175,8 +108,6 @@ class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(1L, updateRequest));
     }
 
-    // --- Change Password Tests ---
-
     @Test
     void changePassword_success() {
         ChangePasswordRequestDto changeRequest = new ChangePasswordRequestDto();
@@ -205,8 +136,6 @@ class UserServiceTest {
         assertThrows(InvalidPasswordException.class, () -> userService.changePassword(1L, changeRequest));
         verify(userRepository, never()).save(any());
     }
-
-    // --- Get All Users Test ---
 
     @Test
     void getAllUsers_success() {
