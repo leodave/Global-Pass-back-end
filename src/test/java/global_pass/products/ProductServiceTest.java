@@ -1,6 +1,6 @@
 package global_pass.products;
 
-import global_pass.Exception.customProductException.ProductNotFoundException;
+import global_pass.exception.customProductException.ProductNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

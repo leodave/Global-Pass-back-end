@@ -1,7 +1,8 @@
 package global_pass.users;
 
-import global_pass.exception.InvalidPasswordException;
-import global_pass.exception.UserNotFoundException;
+import global_pass.config.ApiResponseDto;
+import global_pass.exception.customUserException.InvalidPasswordException;
+import global_pass.exception.customUserException.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +45,7 @@ class UserControllerTest {
     void getUser_returns200() {
         when(userService.getUserById(1L)).thenReturn(userResponse);
 
-        ResponseEntity<UserApiResponseDto<UserResponseDto>> response = userController.getUser(1L);
+        ResponseEntity<ApiResponseDto<UserResponseDto>> response = userController.getUser(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("John", response.getBody().getData().getName());
@@ -65,7 +66,7 @@ class UserControllerTest {
         request.setName("John Updated");
         request.setEmail("john@example.com");
 
-        ResponseEntity<UserApiResponseDto<UserResponseDto>> response = userController.updateUser(1L, request);
+        ResponseEntity<ApiResponseDto<UserResponseDto>> response = userController.updateUser(1L, request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("User updated", response.getBody().getMessage());
@@ -77,7 +78,7 @@ class UserControllerTest {
         request.setOldPassword("password123");
         request.setNewPassword("newpassword123");
 
-        ResponseEntity<UserApiResponseDto<Void>> response = userController.changePassword(1L, request);
+        ResponseEntity<ApiResponseDto<Void>> response = userController.changePassword(1L, request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Password changed", response.getBody().getMessage());
@@ -98,7 +99,7 @@ class UserControllerTest {
     void getAllUsers_returns200() {
         when(userService.getAllUsers()).thenReturn(List.of(userResponse));
 
-        ResponseEntity<UserApiResponseDto<List<UserResponseDto>>> response = userController.getAllUsers();
+        ResponseEntity<ApiResponseDto<List<UserResponseDto>>> response = userController.getAllUsers();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().getData().size());

@@ -1,8 +1,8 @@
 package global_pass.users;
 
+import global_pass.config.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +16,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserApiResponseDto<UserResponseDto>> getUser(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseDto<UserResponseDto>> getUser(@PathVariable Long id) {
         UserResponseDto user = userService.getUserById(id);
-        return ResponseEntity.ok(UserApiResponseDto.<UserResponseDto>builder()
+        return ResponseEntity.ok(ApiResponseDto.<UserResponseDto>builder()
                 .status(200)
                 .message("User found")
                 .data(user)
@@ -26,9 +26,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserApiResponseDto<UserResponseDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequestDto request) {
+    public ResponseEntity<ApiResponseDto<UserResponseDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequestDto request) {
         UserResponseDto user = userService.updateUser(id, request);
-        return ResponseEntity.ok(UserApiResponseDto.<UserResponseDto>builder()
+        return ResponseEntity.ok(ApiResponseDto.<UserResponseDto>builder()
                 .status(200)
                 .message("User updated")
                 .data(user)
@@ -36,18 +36,18 @@ public class UserController {
     }
 
     @PutMapping("/{id}/password")
-    public ResponseEntity<UserApiResponseDto<Void>> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDto request) {
+    public ResponseEntity<ApiResponseDto<Void>> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDto request) {
         userService.changePassword(id, request);
-        return ResponseEntity.ok(UserApiResponseDto.<Void>builder()
+        return ResponseEntity.ok(ApiResponseDto.<Void>builder()
                 .status(200)
                 .message("Password changed")
                 .build());
     }
 
     @GetMapping
-    public ResponseEntity<UserApiResponseDto<List<UserResponseDto>>> getAllUsers() {
+    public ResponseEntity<ApiResponseDto<List<UserResponseDto>>> getAllUsers() {
         List<UserResponseDto> users = userService.getAllUsers();
-        return ResponseEntity.ok(UserApiResponseDto.<List<UserResponseDto>>builder()
+        return ResponseEntity.ok(ApiResponseDto.<List<UserResponseDto>>builder()
                 .status(200)
                 .message("Users retrieved")
                 .data(users)

@@ -6,13 +6,13 @@ import lombok.Data;
 @Builder
 @Data
 public class ProductResponseDto {
-    public String id;
-    public String name;
-    public String description;
-    public String pageLink;
-    public String loginUsername;
-    public String loginPassword;
-    public Double amount;
-    public String currency;
-    public String otherDetails;
+    private String id;
+    private String name;
+    private String description;
+    private String pageLink;
+    private String loginUsername;
+    private String loginPassword;
+    private Double amount;
+    private String currency;
+    private String otherDetails;
 }

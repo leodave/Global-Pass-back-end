@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import global_pass.config.ApiResponseDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,25 +50,28 @@ class ProductsControllerTest {
 
     @Test
     void getAllProducts_returns_success() {
-
         when(productService.getAllProducts()).thenReturn(List.of(responseDto));
 
-        ResponseEntity<List<ProductResponseDto>> actual = productController.getAllProducts();
+        ResponseEntity<ApiResponseDto<List<ProductResponseDto>>> actual = productController.getAllProducts();
 
-        assertThat(actual.getStatusCode().is2xxSuccessful()).isEqualTo(true);
-        assertThat(actual.getBody()).isEqualTo(List.of(responseDto));
-        assertThat(actual.getBody().getFirst().getId()).isEqualTo("uuid-123");
-        assertThat(actual.getBody().getFirst().getName()).isEqualTo("Netflix");
+        assertThat(actual.getStatusCode().is2xxSuccessful()).isTrue();
+        assert actual.getBody() != null;
+        assertThat(actual.getBody().getStatus()).isEqualTo(200);
+        assertThat(actual.getBody().getMessage()).isEqualTo("Products retrieved");
+        assertThat(actual.getBody().getData().getFirst().getId()).isEqualTo("uuid-123");
+        assertThat(actual.getBody().getData().getFirst().getName()).isEqualTo("Netflix");
     }
 
     @Test
     void getAllProducts_returns200_withEmptyList() {
         when(productService.getAllProducts()).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<ProductResponseDto>> actual = productController.getAllProducts();
+        ResponseEntity<ApiResponseDto<List<ProductResponseDto>>> actual = productController.getAllProducts();
 
         assertThat(actual.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(actual.getBody()).isEqualTo(Collections.emptyList());
+        assert actual.getBody() != null;
+        assertThat(actual.getBody().getStatus()).isEqualTo(200);
+        assertThat(actual.getBody().getData()).isEqualTo(Collections.emptyList());
     }
 
     // --- GET /products/{id} ---
@@ -76,12 +80,14 @@ class ProductsControllerTest {
     void getProductById_returns200_withProduct() {
         when(productService.getProductById("uuid-123")).thenReturn(responseDto);
 
-        ResponseEntity<ProductResponseDto> actual = productController.getProductById("uuid-123");
+        ResponseEntity<ApiResponseDto<ProductResponseDto>> actual = productController.getProductById("uuid-123");
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(actual.getBody()).isEqualTo(responseDto);
-        assertThat(actual.getBody().getId()).isEqualTo("uuid-123");
-        assertThat(actual.getBody().getName()).isEqualTo("Netflix");
+        assert actual.getBody() != null;
+        assertThat(actual.getBody().getStatus()).isEqualTo(200);
+        assertThat(actual.getBody().getMessage()).isEqualTo("Product retrieved");
+        assertThat(actual.getBody().getData().getId()).isEqualTo("uuid-123");
+        assertThat(actual.getBody().getData().getName()).isEqualTo("Netflix");
     }
 
     @Test
@@ -99,12 +105,14 @@ class ProductsControllerTest {
     void createProduct_returns201_withCreatedProduct() {
         when(productService.createProduct(validRequest)).thenReturn(responseDto);
 
-        ResponseEntity<ProductResponseDto> actual = productController.createProduct(validRequest);
+        ResponseEntity<ApiResponseDto<ProductResponseDto>> actual = productController.createProduct(validRequest);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(actual.getBody()).isEqualTo(responseDto);
-        assertThat(actual.getBody().getId()).isEqualTo("uuid-123");
-        assertThat(actual.getBody().getName()).isEqualTo("Netflix");
+        assert actual.getBody() != null;
+        assertThat(actual.getBody().getStatus()).isEqualTo(201);
+        assertThat(actual.getBody().getMessage()).isEqualTo("Product created");
+        assertThat(actual.getBody().getData().getId()).isEqualTo("uuid-123");
+        assertThat(actual.getBody().getData().getName()).isEqualTo("Netflix");
     }
 
     @Test
@@ -134,12 +142,14 @@ class ProductsControllerTest {
 
         when(productService.updateProduct("uuid-123", updateRequest)).thenReturn(updatedResponse);
 
-        ResponseEntity<ProductResponseDto> actual = productController.updateProduct("uuid-123", updateRequest);
+        ResponseEntity<ApiResponseDto<ProductResponseDto>> actual = productController.updateProduct("uuid-123", updateRequest);
 
         assertThat(actual.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(actual.getBody()).isEqualTo(updatedResponse);
-        assertThat(actual.getBody().getName()).isEqualTo("Netflix Premium");
-        assertThat(actual.getBody().getAmount()).isEqualTo(22.99);
+        assert actual.getBody() != null;
+        assertThat(actual.getBody().getStatus()).isEqualTo(200);
+        assertThat(actual.getBody().getMessage()).isEqualTo("Product updated");
+        assertThat(actual.getBody().getData().getName()).isEqualTo("Netflix Premium");
+        assertThat(actual.getBody().getData().getAmount()).isEqualTo(22.99);
     }
 
     @Test
@@ -154,13 +164,16 @@ class ProductsControllerTest {
     // --- DELETE /products/{id} ---
 
     @Test
-    void deleteProduct_returns204_noContent() {
+    void deleteProduct_returns200_noContent() {
         doNothing().when(productService).deleteProduct("uuid-123");
 
-        ResponseEntity<Void> actual = productController.deleteProduct("uuid-123");
+        ResponseEntity<ApiResponseDto<Void>> actual = productController.deleteProduct("uuid-123");
 
-        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-        assertThat(actual.getBody()).isNull();
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assert actual.getBody() != null;
+        assertThat(actual.getBody().getStatus()).isEqualTo(200);
+        assertThat(actual.getBody().getMessage()).isEqualTo("Product deleted");
+        assertThat(actual.getBody().getData()).isNull();
     }
 
     @Test

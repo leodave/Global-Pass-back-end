@@ -2,7 +2,7 @@ package global_pass.products;
 
 import java.util.List;
 
-import global_pass.Exception.customProductException.ProductNotFoundException;
+import global_pass.exception.customProductException.ProductNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

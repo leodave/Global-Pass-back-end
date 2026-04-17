@@ -1,8 +1,8 @@
 package global_pass.auth;
 
-import global_pass.exception.EmailAlreadyExistsException;
-import global_pass.exception.InvalidPasswordException;
-import global_pass.exception.UserNotFoundException;
+import global_pass.exception.customUserException.EmailAlreadyExistsException;
+import global_pass.exception.customUserException.InvalidPasswordException;
+import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.users.User;
 import global_pass.users.UserMapper;
 import global_pass.users.UserRepository;

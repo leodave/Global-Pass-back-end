@@ -2,6 +2,7 @@ package global_pass.products;
 
 import java.util.List;
 
+import global_pass.config.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,36 +24,56 @@ public class ProductsController {
     private IProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(productService.getAllProducts());
+    public ResponseEntity<ApiResponseDto<List<ProductResponseDto>>> getAllProducts() {
+        List<ProductResponseDto> products = productService.getAllProducts();
+        return ResponseEntity.ok(ApiResponseDto.<List<ProductResponseDto>>builder()
+                .status(200)
+                .message("Products retrieved")
+                .data(products)
+                .build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable String id) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(productService.getProductById(id));
+    public ResponseEntity<ApiResponseDto<ProductResponseDto>> getProductById(@PathVariable String id) {
+        ProductResponseDto product = productService.getProductById(id);
+        return ResponseEntity.ok(ApiResponseDto.<ProductResponseDto>builder()
+                .status(200)
+                .message("Product retrieved")
+                .data(product)
+                .build());
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDto> createProduct(
+    public ResponseEntity<ApiResponseDto<ProductResponseDto>> createProduct(
             @Valid @RequestBody ProductRequestDto request) {
+        ProductResponseDto product = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.createProduct(request));
+                .body(ApiResponseDto.<ProductResponseDto>builder()
+                        .status(201)
+                        .message("Product created")
+                        .data(product)
+                        .build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> updateProduct(
+    public ResponseEntity<ApiResponseDto<ProductResponseDto>> updateProduct(
             @PathVariable String id,
             @Valid @RequestBody ProductRequestDto request) {
-        return ResponseEntity.ok(productService.updateProduct(id, request));
+        ProductResponseDto product = productService.updateProduct(id, request);
+        return ResponseEntity.ok(ApiResponseDto.<ProductResponseDto>builder()
+                .status(200)
+                .message("Product updated")
+                .data(product)
+                .build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDto<Void>> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDto.<Void>builder()
+                .status(200)
+                .message("Product deleted")
+                .data(null)
+                .build());
     }
 }
