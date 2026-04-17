@@ -2,12 +2,13 @@ package global_pass.users;
 
 import global_pass.auth.SignupRequestDto;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserMapperTest {
 
-    private final UserMapper userMapper = new UserMapper();
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Test
     void toEntity_mapsFieldsCorrectly() {
