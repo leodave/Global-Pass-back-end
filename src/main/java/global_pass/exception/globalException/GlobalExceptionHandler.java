@@ -1,8 +1,5 @@
 package global_pass.exception.globalException;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import global_pass.exception.customProductException.ProductNotFoundException;
 import global_pass.exception.customUserException.EmailAlreadyExistsException;
 import global_pass.exception.customUserException.InvalidPasswordException;
