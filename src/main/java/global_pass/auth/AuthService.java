@@ -20,6 +20,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private  final JwtUtil jwtUtil;
 
     public UserResponseDto signup(SignupRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -32,14 +33,21 @@ public class AuthService {
         return userMapper.toResponseDto(saved);
     }
 
-    public UserResponseDto login(LoginRequestDto request) {
+    public LoginResponseDto login(LoginRequestDto request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("Failed login attempt for: {}", request.getEmail());
             throw new InvalidPasswordException();
         }
+
+        // Generate a JWT token using the user's email as the subject
+        String token = jwtUtil.generateToken(user.getEmail());
+
         log.info("User logged in: {}", user.getEmail());
-        return userMapper.toResponseDto(user);
+        return LoginResponseDto.builder()
+                .token(token)
+                .user(userMapper.toResponseDto(user))
+                .build();
     }
 }

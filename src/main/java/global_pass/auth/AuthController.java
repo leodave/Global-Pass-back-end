@@ -29,12 +29,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseDto<UserResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
-        UserResponseDto user = authService.login(request);
-        return ResponseEntity.ok(ApiResponseDto.<UserResponseDto>builder()
+    public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
+        LoginResponseDto loginInUser = authService.login(request);
+        return ResponseEntity.ok(ApiResponseDto.<LoginResponseDto>builder()
                 .status(200)
                 .message("Login successful")
-                .data(user)
+                .data(loginInUser)
                 .build());
     }
 }

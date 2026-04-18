@@ -30,6 +30,8 @@ class AuthControllerTest {
 
     private UserResponseDto userResponse;
 
+    private LoginResponseDto loginResponse;
+
     @BeforeEach
     void setUp() {
         userResponse = UserResponseDto.builder()
@@ -38,6 +40,11 @@ class AuthControllerTest {
                 .email("john@example.com")
                 .role(User.Role.USER)
                 .active(true)
+                .build();
+
+        loginResponse = LoginResponseDto.builder()
+                .token("token")
+                .user(userResponse)
                 .build();
     }
 
@@ -73,18 +80,18 @@ class AuthControllerTest {
 
     @Test
     void login_returns200() {
-        when(authService.login(any(LoginRequestDto.class))).thenReturn(userResponse);
+        when(authService.login(any(LoginRequestDto.class))).thenReturn(loginResponse);
 
         LoginRequestDto request = new LoginRequestDto();
         request.setEmail("john@example.com");
         request.setPassword("password123");
 
-        ResponseEntity<ApiResponseDto<UserResponseDto>> response = authController.login(request);
+        ResponseEntity<ApiResponseDto<LoginResponseDto>> response = authController.login(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(200, response.getBody().getStatus());
         assertEquals("Login successful", response.getBody().getMessage());
-        assertEquals("John", response.getBody().getData().getName());
+        assertEquals("John", response.getBody().getData().getUser().getName());
     }
 
     @Test
