@@ -1,8 +1,8 @@
 package global_pass.users;
 
-import global_pass.exception.EmailAlreadyExistsException;
-import global_pass.exception.InvalidPasswordException;
-import global_pass.exception.UserNotFoundException;
+import global_pass.exception.customUserException.EmailAlreadyExistsException;
+import global_pass.exception.customUserException.InvalidPasswordException;
+import global_pass.exception.customUserException.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

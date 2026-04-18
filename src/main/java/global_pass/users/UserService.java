@@ -1,8 +1,8 @@
 package global_pass.users;
 
-import global_pass.exception.EmailAlreadyExistsException;
-import global_pass.exception.InvalidPasswordException;
-import global_pass.exception.UserNotFoundException;
+import global_pass.exception.customUserException.EmailAlreadyExistsException;
+import global_pass.exception.customUserException.InvalidPasswordException;
+import global_pass.exception.customUserException.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

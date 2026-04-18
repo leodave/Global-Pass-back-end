@@ -1,6 +1,6 @@
 package global_pass.auth;
 
-import global_pass.users.UserApiResponseDto;
+import global_pass.config.ApiResponseDto;
 import global_pass.users.UserResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserApiResponseDto<UserResponseDto>> signup(@Valid @RequestBody SignupRequestDto request) {
+    public ResponseEntity<ApiResponseDto<UserResponseDto>> signup(@Valid @RequestBody SignupRequestDto request) {
         UserResponseDto user = authService.signup(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserApiResponseDto.<UserResponseDto>builder()
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.<UserResponseDto>builder()
                 .status(201)
                 .message("Signup successful")
                 .data(user)
@@ -29,9 +29,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserApiResponseDto<UserResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
+    public ResponseEntity<ApiResponseDto<UserResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
         UserResponseDto user = authService.login(request);
-        return ResponseEntity.ok(UserApiResponseDto.<UserResponseDto>builder()
+        return ResponseEntity.ok(ApiResponseDto.<UserResponseDto>builder()
                 .status(200)
                 .message("Login successful")
                 .data(user)

@@ -1,10 +1,10 @@
 package global_pass.auth;
 
-import global_pass.exception.EmailAlreadyExistsException;
-import global_pass.exception.InvalidPasswordException;
-import global_pass.exception.UserNotFoundException;
+import global_pass.exception.customUserException.EmailAlreadyExistsException;
+import global_pass.exception.customUserException.InvalidPasswordException;
+import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.users.User;
-import global_pass.users.UserApiResponseDto;
+import global_pass.config.ApiResponseDto;
 import global_pass.users.UserResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class AuthControllerTest {
         request.setEmail("john@example.com");
         request.setPassword("password123");
 
-        ResponseEntity<UserApiResponseDto<UserResponseDto>> response = authController.signup(request);
+        ResponseEntity<ApiResponseDto<UserResponseDto>> response = authController.signup(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(201, response.getBody().getStatus());
@@ -79,7 +79,7 @@ class AuthControllerTest {
         request.setEmail("john@example.com");
         request.setPassword("password123");
 
-        ResponseEntity<UserApiResponseDto<UserResponseDto>> response = authController.login(request);
+        ResponseEntity<ApiResponseDto<UserResponseDto>> response = authController.login(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(200, response.getBody().getStatus());

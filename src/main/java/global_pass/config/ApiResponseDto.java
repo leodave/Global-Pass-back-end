@@ -1,4 +1,4 @@
-package global_pass.users;
+package global_pass.config;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.Data;
 // Example: { "status": 200, "message": "Login successful", "data": {...} }
 @Data
 @Builder
-public class UserApiResponseDto<T> {
+public class ApiResponseDto<T> {
 
     private int status;
     private String message;

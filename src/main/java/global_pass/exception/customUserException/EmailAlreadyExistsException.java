@@ -1,4 +1,4 @@
-package global_pass.exception;
+package global_pass.exception.customUserException;
 
 public class EmailAlreadyExistsException extends RuntimeException {
 
