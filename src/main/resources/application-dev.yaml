@@ -20,6 +20,12 @@ spring:
   sql:
     init:
       mode: always
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          secret: "your-super-secret-key-that-is-at-least-32-characters-long"
+
 jwt:
   secret: "your-super-secret-key-that-is-at-least-32-characters-long"
   expiration: 3600000
