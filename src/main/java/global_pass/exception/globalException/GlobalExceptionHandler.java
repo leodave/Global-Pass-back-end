@@ -1,6 +1,6 @@
 package global_pass.exception.globalException;
 
-import global_pass.exception.customProductException.ProductNotFoundException;
+import global_pass.exception.customBookingException.BookingNotFoundException;
 import global_pass.exception.customUserException.EmailAlreadyExistsException;
 import global_pass.exception.customUserException.InvalidPasswordException;
 import global_pass.exception.customUserException.UserNotFoundException;
@@ -71,9 +71,9 @@ public class GlobalExceptionHandler {
     }
 
     // Handles your ProductNotFoundException
-    @ExceptionHandler(ProductNotFoundException.class)
+    @ExceptionHandler(BookingNotFoundException.class)
     public ResponseEntity<String> handleProductNotFound(
-            ProductNotFoundException ex) {
+            BookingNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage());
     }

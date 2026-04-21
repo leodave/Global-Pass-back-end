@@ -1,12 +1,13 @@
-package global_pass.products;
+package global_pass.bookings;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Builder
 @Data
-public class ProductResponseDto {
+public class BookingResponseDto {
     private String id;
+    private Long userId;
     private String name;
     private String description;
     private String pageLink;
