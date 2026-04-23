@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles validation errors (@NotBlank, @Email, @Size etc.)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
@@ -32,7 +31,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // Handles user not found
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleUserNotFound(UserNotFoundException ex) {
         log.warn("User not found: {}", ex.getMessage());
@@ -42,7 +40,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // Handles duplicate email
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleEmailExists(EmailAlreadyExistsException ex) {
         log.warn("Duplicate email: {}", ex.getMessage());
@@ -52,7 +49,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // Handles invalid password
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleInvalidPassword(InvalidPasswordException ex) {
         log.warn("Invalid password attempt");
@@ -62,23 +58,41 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    // 2. Handles malformed JSON body (missing required fields, wrong types)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleUnreadableMessage(
-            HttpMessageNotReadableException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Malformed request body");
+    public ResponseEntity<ApiResponseDto<Void>> handleUnreadableMessage(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(ApiResponseDto.<Void>builder()
+                .status(400)
+                .message("Malformed request body")
+                .build());
     }
 
-    // Handles your ProductNotFoundException
     @ExceptionHandler(BookingNotFoundException.class)
-    public ResponseEntity<String> handleProductNotFound(
-            BookingNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+    public ResponseEntity<ApiResponseDto<Void>> handleBookingNotFound(BookingNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDto.<Void>builder()
+                .status(404)
+                .message(ex.getMessage())
+                .build());
     }
 
-    // Catches everything else
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponseDto<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("Validation error: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(ApiResponseDto.<Void>builder()
+                .status(400)
+                .message(ex.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponseDto<Void>> handleMaxUploadSize(
+            org.springframework.web.multipart.MaxUploadSizeExceededException ex) {
+        log.warn("File too large: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(ApiResponseDto.<Void>builder()
+                .status(400)
+                .message("File exceeds maximum upload size of 10MB")
+                .build());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseDto<Void>> handleGeneral(Exception ex) {
         log.error("Unexpected error: ", ex);
