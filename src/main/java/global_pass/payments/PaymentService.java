@@ -1,9 +1,8 @@
 package global_pass.payments;
 
 import global_pass.exception.customUserException.UserNotFoundException;
-import global_pass.exception.customProductException.ProductNotFoundException;
-import global_pass.products.ProductEntity;
-import global_pass.products.ProductRepository;
+import global_pass.bookings.BookingEntity;
+import global_pass.bookings.BookingRepository;
 import global_pass.users.User;
 import global_pass.users.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final BookingRepository bookingRepository;
     private final FileStorageService fileStorageService;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -38,19 +37,19 @@ public class PaymentService {
     );
 
     @Transactional
-    public PaymentResponseDto uploadPayment(Long userId, String productId, MultipartFile file, String note) {
+    public PaymentResponseDto uploadPayment(Long userId, String bookingId, MultipartFile file, String note) {
         validateFile(file);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
-        ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+        BookingEntity booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found: " + bookingId));
 
         String storedPath = fileStorageService.store(file, "payments");
 
         PaymentEntity payment = new PaymentEntity();
         payment.setUserId(userId);
-        payment.setProductId(productId);
+        payment.setProductId(bookingId);
         payment.setFileName(storedPath);
         payment.setOriginalFileName(file.getOriginalFilename());
         payment.setContentType(file.getContentType());
@@ -58,8 +57,8 @@ public class PaymentService {
         payment.setNote(note);
 
         PaymentEntity saved = paymentRepository.save(payment);
-        log.info("Payment uploaded: id={}, user={}, product={}", saved.getId(), user.getEmail(), product.getName());
-        return toDto(saved, user, product);
+        log.info("Payment uploaded: id={}, user={}, booking={}", saved.getId(), user.getEmail(), booking.getName());
+        return toDto(saved, user, booking);
     }
 
     public List<PaymentResponseDto> getPaymentsByUser(Long userId) {
@@ -110,18 +109,18 @@ public class PaymentService {
 
     private PaymentResponseDto toDtoWithLookup(PaymentEntity payment) {
         User user = userRepository.findById(payment.getUserId()).orElse(null);
-        ProductEntity product = productRepository.findById(payment.getProductId()).orElse(null);
-        return toDto(payment, user, product);
+        BookingEntity booking = bookingRepository.findById(payment.getProductId()).orElse(null);
+        return toDto(payment, user, booking);
     }
 
-    private PaymentResponseDto toDto(PaymentEntity payment, User user, ProductEntity product) {
+    private PaymentResponseDto toDto(PaymentEntity payment, User user, BookingEntity booking) {
         return PaymentResponseDto.builder()
                 .id(payment.getId())
                 .userId(payment.getUserId())
                 .userName(user != null ? user.getName() : "Unknown")
                 .userEmail(user != null ? user.getEmail() : "Unknown")
                 .productId(payment.getProductId())
-                .productName(product != null ? product.getName() : "Unknown")
+                .productName(booking != null ? booking.getName() : "Unknown")
                 .originalFileName(payment.getOriginalFileName())
                 .contentType(payment.getContentType())
                 .fileSize(payment.getFileSize())

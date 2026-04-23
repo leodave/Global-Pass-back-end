@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class UserService {
         return userMapper.toResponseDto(user);
     }
 
+    @Transactional
     public UserResponseDto updateUser(Long id, UpdateUserRequestDto request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
@@ -38,6 +40,7 @@ public class UserService {
         return userMapper.toResponseDto(updated);
     }
 
+    @Transactional
     public void changePassword(Long id, ChangePasswordRequestDto request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
