@@ -25,7 +25,7 @@ public class PaymentService {
     private final BookingRepository bookingRepository;
     private final FileStorageService fileStorageService;
 
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     private static final Set<String> ALLOWED_TYPES = Set.of(
             "image/png", "image/jpeg", "image/webp",

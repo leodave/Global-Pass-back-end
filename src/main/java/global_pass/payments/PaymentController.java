@@ -1,6 +1,6 @@
 package global_pass.payments;
 
-import global_pass.users.UserApiResponseDto;
+import global_pass.config.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -20,58 +20,54 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    // User uploads payment proof
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserApiResponseDto<Void>> upload(
+    public ResponseEntity<ApiResponseDto<PaymentResponseDto>> upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("productId") String productId,
             @RequestParam("userId") Long userId,
             @RequestParam(value = "note", required = false) String note) {
 
         PaymentResponseDto payment = paymentService.uploadPayment(userId, productId, file, note);
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserApiResponseDto.<Void>builder()
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.<PaymentResponseDto>builder()
                 .status(201)
                 .message("Payment proof uploaded")
+                .data(payment)
                 .build());
     }
 
-    // User views own payments
     @GetMapping("/my/{userId}")
-    public ResponseEntity<UserApiResponseDto<List<PaymentResponseDto>>> getMyPayments(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponseDto<List<PaymentResponseDto>>> getMyPayments(@PathVariable Long userId) {
         List<PaymentResponseDto> payments = paymentService.getPaymentsByUser(userId);
-        return ResponseEntity.ok(UserApiResponseDto.<List<PaymentResponseDto>>builder()
+        return ResponseEntity.ok(ApiResponseDto.<List<PaymentResponseDto>>builder()
                 .status(200)
                 .message("Payments retrieved")
                 .data(payments)
                 .build());
     }
 
-    // Admin views all payments
     @GetMapping
-    public ResponseEntity<UserApiResponseDto<List<PaymentResponseDto>>> getAllPayments() {
+    public ResponseEntity<ApiResponseDto<List<PaymentResponseDto>>> getAllPayments() {
         List<PaymentResponseDto> payments = paymentService.getAllPayments();
-        return ResponseEntity.ok(UserApiResponseDto.<List<PaymentResponseDto>>builder()
+        return ResponseEntity.ok(ApiResponseDto.<List<PaymentResponseDto>>builder()
                 .status(200)
                 .message("All payments retrieved")
                 .data(payments)
                 .build());
     }
 
-    // Admin updates payment status (approve/reject)
     @PutMapping("/{id}/status")
-    public ResponseEntity<UserApiResponseDto<PaymentResponseDto>> updateStatus(
+    public ResponseEntity<ApiResponseDto<PaymentResponseDto>> updateStatus(
             @PathVariable String id,
             @Valid @RequestBody StatusUpdateRequest request) {
 
         PaymentResponseDto payment = paymentService.updateStatus(id, request.getStatus(), request.getAdminNote());
-        return ResponseEntity.ok(UserApiResponseDto.<PaymentResponseDto>builder()
+        return ResponseEntity.ok(ApiResponseDto.<PaymentResponseDto>builder()
                 .status(200)
                 .message("Payment status updated to " + request.getStatus())
                 .data(payment)
                 .build());
     }
 
-    // Admin downloads the uploaded file
     @GetMapping("/{id}/file")
     public ResponseEntity<Resource> downloadFile(@PathVariable String id) {
         PaymentEntity payment = paymentService.getPaymentEntity(id);

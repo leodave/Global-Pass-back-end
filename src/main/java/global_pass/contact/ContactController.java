@@ -1,6 +1,6 @@
 package global_pass.contact;
 
-import global_pass.users.UserApiResponseDto;
+import global_pass.config.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +19,10 @@ public class ContactController {
     private final ContactRepository contactRepository;
 
     @PostMapping
-    public ResponseEntity<UserApiResponseDto<Void>> submit(@Valid @RequestBody ContactRequestDto request) {
-        // Honeypot check — if filled, it's a bot
+    public ResponseEntity<ApiResponseDto<Void>> submit(@Valid @RequestBody ContactRequestDto request) {
         if (request.getWebsite() != null && !request.getWebsite().isBlank()) {
             log.warn("Honeypot triggered from: {}", request.getEmail());
-            // Return success to not tip off the bot
-            return ResponseEntity.status(HttpStatus.CREATED).body(UserApiResponseDto.<Void>builder()
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.<Void>builder()
                     .status(201)
                     .message("Message sent successfully")
                     .build());
@@ -34,16 +32,15 @@ public class ContactController {
         msg.setMessage(request.getMessage());
         contactRepository.save(msg);
         log.info("Contact message received from: {}", request.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(UserApiResponseDto.<Void>builder()
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.<Void>builder()
                 .status(201)
                 .message("Message sent successfully")
                 .build());
     }
 
-    // Admin: view all messages
     @GetMapping
-    public ResponseEntity<UserApiResponseDto<List<ContactMessage>>> getAll() {
-        return ResponseEntity.ok(UserApiResponseDto.<List<ContactMessage>>builder()
+    public ResponseEntity<ApiResponseDto<List<ContactMessage>>> getAll() {
+        return ResponseEntity.ok(ApiResponseDto.<List<ContactMessage>>builder()
                 .status(200)
                 .message("Messages retrieved")
                 .data(contactRepository.findAllByOrderByCreatedAtDesc())
