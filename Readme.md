@@ -1,9 +1,6 @@
 Global pass project
 
-Global pass
-
 User
-
 1. View services
 2. Select service
     1. University application
