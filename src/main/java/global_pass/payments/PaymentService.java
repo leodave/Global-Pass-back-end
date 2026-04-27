@@ -156,6 +156,7 @@ public class PaymentService {
             throw new IllegalStateException("Only PENDING payments can have their file replaced");
         }
         User user = userRepository.findById(payment.getUserId()).orElse(null);
+        String oldFileName = payment.getFileName();
         String safeName = user != null ? user.getName().replaceAll("[^a-zA-Z0-9]", "_") : "unknown";
         String safeService = ServiceCatalog.getNameById(payment.getBookingId()).replaceAll("[^a-zA-Z0-9]", "_");
         String ext = getExtension(file.getOriginalFilename());
@@ -166,6 +167,11 @@ public class PaymentService {
         payment.setOriginalFileName(file.getOriginalFilename());
         payment.setContentType(file.getContentType());
         payment.setFileSize(file.getSize());
+        try {
+            fileStorageService.delete(oldFileName);
+        } catch (Exception e) {
+            log.warn("Failed to delete old file {}: {}", oldFileName, e.getMessage());
+        }
         PaymentEntity saved = paymentRepository.save(payment);
         log.info("Payment file replaced: id={}", paymentId);
         return toDto(saved, user);
