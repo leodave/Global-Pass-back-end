@@ -26,6 +26,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+jwt:
+  secret: ${JWT_SECRET:YourSuperSecretKeyThatIsAtLeast32BytesLong!!}
+  expiration: 86400000
+
 app:
   upload-dir: uploads
   supabase:
