@@ -1,0 +1,25 @@
+@echo off
+REM ============================================
+REM  GlobalPass Backend - Production Run Script
+REM  Copy this to run-prod.bat and fill in your real values
+REM  NEVER commit this file with real credentials
+REM ============================================
+
+REM -- Database --
+set DATABASE_URL=jdbc:postgresql://aws-1-eu-north-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
+set DATABASE_USERNAME=your-db-username
+set DATABASE_PASSWORD=your-db-password
+
+REM -- JWT --
+set JWT_SECRET=your-256-bit-random-secret-key-here-at-least-32-bytes
+
+REM -- Supabase Storage --
+set SUPABASE_URL=https://your-project.supabase.co
+set SUPABASE_KEY=your-supabase-service-role-key
+set SUPABASE_BUCKET=payments
+
+REM -- CORS --
+set CORS_ORIGINS=http://localhost:3000
+
+REM -- Run --
+mvn spring-boot:run

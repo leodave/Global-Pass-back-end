@@ -41,6 +41,17 @@ public class User {
     // Used to deactivate account without deleting
     private boolean active = true;
 
+    // Password reset token
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
+
+    // Email verification
+    private boolean emailVerified = false;
+    private String verificationToken;
+
+    // Tracks when password was last changed — tokens issued before this are invalid
+    private LocalDateTime passwordChangedAt;
+
     // Auto-set on creation
     @CreationTimestamp
     private LocalDateTime createdAt;

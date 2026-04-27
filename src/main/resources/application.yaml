@@ -1,15 +1,15 @@
 spring:
   profiles:
-    active: dev
+    active: prod
 
   application:
     name: global-pass
 
   # ---- Supabase PostgreSQL ----
   datasource:
-    url: jdbc:postgresql://aws-1-eu-north-1.pooler.supabase.com:6543/postgres?user=postgres.tkgfhdvvrdtxwftlxvkl&password=!QAZxsw2%25TGBnhy6
-    username: postgres.tkgfhdvvrdtxwftlxvkl
-    password: "!QAZxsw2%TGBnhy6"
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -27,16 +27,16 @@ spring:
       max-request-size: 10MB
 
 jwt:
-  secret: ${JWT_SECRET:YourSuperSecretKeyThatIsAtLeast32BytesLong!!}
-  expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 app:
   upload-dir: uploads
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001}
   supabase:
-    url: ${SUPABASE_URL:https://tkgfhdvvrdtxwftlxvkl.supabase.co}
-    key: ${SUPABASE_KEY:your-supabase-service-role-key}
+    url: ${SUPABASE_URL}
+    key: ${SUPABASE_KEY}
     bucket: ${SUPABASE_BUCKET:payments}
 
 ---

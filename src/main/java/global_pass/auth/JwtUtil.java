@@ -26,14 +26,15 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // Generates a JWT token with the user's email as the subject
-    public String generateToken(String email) {
+    // Generates a JWT token with the user's email and role
+    public String generateToken(String email, String role) {
         return Jwts.builder()
-                .subject(email)                                                      // Store email inside the token
-                .issuedAt(new Date())                                                // Token creation time
-                .expiration(new Date(System.currentTimeMillis() + expiration))      // Token expiry time
-                .signWith(getKey())                                                  // Sign with secret key
-                .compact();                                                          // Build the token string
+                .subject(email)
+                .claim("role", role)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getKey())
+                .compact();
     }
 
     // Extracts the email from a valid JWT token
@@ -46,13 +47,32 @@ public class JwtUtil {
                 .getSubject();                  // Get the email we stored as subject
     }
 
+    // Extracts the role from a valid JWT token
+    public String extractRole(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
+    }
+
+    public Date extractIssuedAt(String token) {
+        return Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getIssuedAt();
+    }
+
     // Returns true if the token is valid, false if expired or tampered
     public boolean isTokenValid(String token) {
         try {
-            extractEmail(token);    // If this doesn't throw, token is valid
+            extractEmail(token);
             return true;
         } catch (Exception e) {
-            return false;           // Token is expired, malformed, or tampered
+            return false;
         }
     }
 

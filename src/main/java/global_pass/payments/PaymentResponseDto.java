@@ -14,6 +14,7 @@ public class PaymentResponseDto {
     private String userEmail;
     private String bookingId;
     private String bookingName;
+    private Double amount;
     private String originalFileName;
     private String contentType;
     private long fileSize;

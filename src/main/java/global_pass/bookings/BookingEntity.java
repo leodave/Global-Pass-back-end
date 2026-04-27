@@ -1,57 +1,49 @@
 package global_pass.bookings;
 
-import global_pass.users.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class BookingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
-    @Column(name = "name")
-    private String name;
+    private String userName;
 
-    @Column(name = "description")
-    private String description;
+    private String userEmail;
 
-    @Column(name = "page_link")
-    private String pageLink;
+    @Column(nullable = false)
+    private String serviceId;
 
-    @Column(name = "login_username")
-    private String loginUsername;
+    @Column(nullable = false)
+    private String serviceName;
 
-    @Column(name = "login_password")
-    private String loginPassword;
-
-    @Column(name = "amount")
     private Double amount;
 
-    @Column(name = "currency")
     private String currency;
 
-    @Column(name = "other_details")
-    private String otherDetails;
+    private String status;
+
+    private String paymentId;
+
+    private String paymentNote;
+
+    private String originalFileName;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }

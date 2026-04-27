@@ -4,6 +4,7 @@ import global_pass.auth.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ import java.util.List;
 // Security configuration for the application
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -42,14 +44,16 @@ public class SecurityConfig {
             // Stateless session — no server-side session stored
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // Define endpoint access rules
+            // Allow H2 console iframe
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+
             .authorizeHttpRequests(auth -> auth
-                // Allow signup and login without authentication
+                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/payments/**").permitAll()
-                .requestMatchers("/api/contact/**").permitAll()
+                .requestMatchers("/api/contact").permitAll()
                 .requestMatchers("/public/**").permitAll()
-                // All other endpoints require authentication
+                .requestMatchers("/api/bookings/**").hasRole("ADMIN")
+                .requestMatchers("/api/users").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
 

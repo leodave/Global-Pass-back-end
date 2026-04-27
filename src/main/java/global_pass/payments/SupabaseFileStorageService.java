@@ -32,10 +32,9 @@ public class SupabaseFileStorageService implements FileStorageService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     @Override
-    public String store(MultipartFile file, String subDir) {
+    public String store(MultipartFile file, String subDir, String fileName) {
         try {
-            String ext = getExtension(file.getOriginalFilename());
-            String objectPath = subDir + "/" + UUID.randomUUID() + ext;
+            String objectPath = subDir + "/" + fileName;
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(supabaseUrl + "/storage/v1/object/" + bucket + "/" + objectPath))

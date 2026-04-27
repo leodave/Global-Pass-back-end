@@ -23,8 +23,16 @@ public class PaymentEntity {
     @Column(nullable = false)
     private Long userId;
 
+    private String userName;
+
+    private String userEmail;
+
     @Column(nullable = false)
     private String bookingId;
+
+    private String bookingName;
+
+    private Double amount;
 
     @Column(nullable = false)
     private String fileName;
