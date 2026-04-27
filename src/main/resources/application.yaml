@@ -32,6 +32,8 @@ jwt:
 
 app:
   upload-dir: uploads
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001}
   supabase:
     url: ${SUPABASE_URL:https://tkgfhdvvrdtxwftlxvkl.supabase.co}
     key: ${SUPABASE_KEY:your-supabase-service-role-key}
