@@ -23,8 +23,29 @@ public class BookingsController {
 
     private IBookingService bookingService;
 
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> listAllBookings() {
+        List<BookingResponseDto> bookings = bookingService.getAllBookings();
+        return ResponseEntity.ok(ApiResponseDto.<List<BookingResponseDto>>builder()
+                .status(200)
+                .message("All bookings retrieved")
+                .data(bookings)
+                .build());
+    }
+
+    @GetMapping("/all/{id}")
+    public ResponseEntity<ApiResponseDto<BookingResponseDto>> getAnyBookingById(
+            @PathVariable String id) {
+        BookingResponseDto booking = bookingService.getBookingByIdPublic(id);
+        return ResponseEntity.ok(ApiResponseDto.<BookingResponseDto>builder()
+                .status(200)
+                .message("Booking retrieved")
+                .data(booking)
+                .build());
+    }
+
     @GetMapping
-    public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getAllBookings(
+    public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getUserBookings(
             @PathVariable Long userId) {
         List<BookingResponseDto> bookings = bookingService.getAllBookingsByUser(userId);
         return ResponseEntity.ok(ApiResponseDto.<List<BookingResponseDto>>builder()

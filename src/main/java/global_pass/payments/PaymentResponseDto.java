@@ -12,8 +12,8 @@ public class PaymentResponseDto {
     private Long userId;
     private String userName;
     private String userEmail;
-    private String productId;
-    private String productName;
+    private String bookingId;
+    private String bookingName;
     private String originalFileName;
     private String contentType;
     private long fileSize;

@@ -23,11 +23,11 @@ public class PaymentController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponseDto<PaymentResponseDto>> upload(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("productId") String productId,
+            @RequestParam("bookingId") String bookingId,
             @RequestParam("userId") Long userId,
             @RequestParam(value = "note", required = false) String note) {
 
-        PaymentResponseDto payment = paymentService.uploadPayment(userId, productId, file, note);
+        PaymentResponseDto payment = paymentService.uploadPayment(userId, bookingId, file, note);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.<PaymentResponseDto>builder()
                 .status(201)
                 .message("Payment proof uploaded")

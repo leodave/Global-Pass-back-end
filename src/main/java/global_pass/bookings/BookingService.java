@@ -20,6 +20,25 @@ public class BookingService implements IBookingService {
     private final UserRepository userRepository;
 
     @Override
+    public List<BookingResponseDto> getAllBookings() {
+        log.info("Fetching all bookings");
+        return bookingRepository.findAll().stream()
+                .map(bookingMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public BookingResponseDto getBookingByIdPublic(String id) {
+        log.info("Fetching booking with id: {}", id);
+        BookingEntity booking = bookingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Booking not found with id: {}", id);
+                    return new BookingNotFoundException(id);
+                });
+        return bookingMapper.toResponseDto(booking);
+    }
+
+    @Override
     public List<BookingResponseDto> getAllBookingsByUser(Long userId) {
         log.info("Fetching all bookings for userId: {}", userId);
         List<BookingResponseDto> bookings = bookingRepository.findAllByUserId(userId)

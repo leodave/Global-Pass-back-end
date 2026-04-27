@@ -49,7 +49,7 @@ public class PaymentService {
 
         PaymentEntity payment = new PaymentEntity();
         payment.setUserId(userId);
-        payment.setProductId(bookingId);
+        payment.setBookingId(bookingId);
         payment.setFileName(storedPath);
         payment.setOriginalFileName(file.getOriginalFilename());
         payment.setContentType(file.getContentType());
@@ -109,7 +109,7 @@ public class PaymentService {
 
     private PaymentResponseDto toDtoWithLookup(PaymentEntity payment) {
         User user = userRepository.findById(payment.getUserId()).orElse(null);
-        BookingEntity booking = bookingRepository.findById(payment.getProductId()).orElse(null);
+        BookingEntity booking = bookingRepository.findById(payment.getBookingId()).orElse(null);
         return toDto(payment, user, booking);
     }
 
@@ -119,8 +119,8 @@ public class PaymentService {
                 .userId(payment.getUserId())
                 .userName(user != null ? user.getName() : "Unknown")
                 .userEmail(user != null ? user.getEmail() : "Unknown")
-                .productId(payment.getProductId())
-                .productName(booking != null ? booking.getName() : "Unknown")
+                .bookingId(payment.getBookingId())
+                .bookingName(booking != null ? booking.getName() : "Unknown")
                 .originalFileName(payment.getOriginalFileName())
                 .contentType(payment.getContentType())
                 .fileSize(payment.getFileSize())

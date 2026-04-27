@@ -24,7 +24,7 @@ public class PaymentEntity {
     private Long userId;
 
     @Column(nullable = false)
-    private String productId;
+    private String bookingId;
 
     @Column(nullable = false)
     private String fileName;
