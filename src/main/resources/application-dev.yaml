@@ -6,8 +6,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: root
     password: root
-    settings:
-      web-allow-others: true
   h2:
     console:
       enabled: true
@@ -15,7 +13,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none        # ✅ schema.sql handles table creation, not Hibernate
     defer-datasource-initialization: true
   sql:
     init:

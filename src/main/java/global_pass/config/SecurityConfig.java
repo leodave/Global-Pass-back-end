@@ -5,6 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 import global_pass.auth.JwtFilter;
 import global_pass.auth.oath2.GoogleOAuthUserSyncFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -30,6 +31,9 @@ public class SecurityConfig {
 
     // inject the specific Google implementation
     private final GoogleOAuthUserSyncFilter googleOAuthUserSyncFilter;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -68,8 +72,7 @@ public class SecurityConfig {
         // uses your local secret to validate tokens during dev/testing
         return NimbusJwtDecoder.withSecretKey(
                 new SecretKeySpec(
-                        "your-very-long-secret-key-at-least-256-bits-long-for-hs256".getBytes(),
-                        "HmacSHA256"
+                        jwtSecret.getBytes(), "HmacSHA256"
                 )
         ).build();
     }
