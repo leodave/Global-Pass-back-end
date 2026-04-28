@@ -16,6 +16,7 @@ INSERT INTO users (id, name, email, password, auth_provider, role, active) VALUE
     (4, 'david@gmail.com','david@gmail.com',   NULL,                                                           'GOOGLE', 'USER',  TRUE),
     (5, 'emma@gmail.com', 'emma@gmail.com',    NULL,                                                           'GOOGLE', 'USER',  TRUE);
 
+ALTER TABLE users ALTER COLUMN id RESTART WITH 6;
 -- ──────────────────────────────────────────────
 -- SEED BOOKINGS
 -- each user has at least 1 booking
@@ -31,3 +32,4 @@ INSERT INTO bookings (id, user_id, name, description, page_link, login_username,
     -- Carol (user_id = 3)
     ('book-005', 3, 'NordVPN',              'VPN service with 6 device connections',     'https://nordvpn.com/login',   'carol@email.com', 'NordPass654!',   4.99, 'USD', '2 year plan expires Dec 2026'),
     ('book-006', 3, 'Microsoft 365',        'Office apps with 1TB OneDrive storage',     'https://microsoft.com/login', 'carol@email.com', 'MSPass147!',     9.99, 'USD', 'Personal plan, 5 devices');
+
