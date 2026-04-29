@@ -20,3 +20,12 @@ app:
     url: ${SUPABASE_URL}
     key: ${SUPABASE_KEY}
     bucket: ${SUPABASE_BUCKET:payments}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
