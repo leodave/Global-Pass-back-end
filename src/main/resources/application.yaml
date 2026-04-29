@@ -7,9 +7,9 @@ spring:
 
   # ---- Supabase PostgreSQL ----
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:postgresql://aws-1-eu-north-1.pooler.supabase.com:6543/postgres
+    username: postgres.tkgfhdvvrdtxwftlxvkl
+    password: Globalpass125207
     driver-class-name: org.postgresql.Driver
 
   jpa:

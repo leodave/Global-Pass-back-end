@@ -7,11 +7,16 @@ spring:
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
 
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
+
+app:
+  supabase:
+    url: ${SUPABASE_URL}
+    key: ${SUPABASE_KEY}
+    bucket: ${SUPABASE_BUCKET:payments}
