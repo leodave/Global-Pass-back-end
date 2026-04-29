@@ -70,9 +70,9 @@ public class GlobalExceptionHandler {
                 .body("Malformed request body");
     }
 
-    // Handles your ProductNotFoundException
+    // Handles your BookingNotFoundException
     @ExceptionHandler(BookingNotFoundException.class)
-    public ResponseEntity<String> handleProductNotFound(
+    public ResponseEntity<String> handleBookingNotFound(
             BookingNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage());

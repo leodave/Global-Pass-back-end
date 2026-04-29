@@ -1,5 +1,7 @@
 package global_pass.bookings;
 
+import java.time.LocalDateTime;
+
 import global_pass.users.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "bookings")
@@ -54,4 +58,12 @@ public class BookingEntity {
 
     @Column(name = "other_details")
     private String otherDetails;
+
+    // Auto-set on creation
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    // Auto-updated on every save
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
