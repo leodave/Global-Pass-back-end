@@ -44,7 +44,8 @@ public final class ServiceCatalog {
         Map.entry("s35", "Car Rental Reservation"),
         Map.entry("s36", "Custom International Payment"),
         Map.entry("s37", "Donations & Crowdfunding"),
-        Map.entry("s38", "Recurring Payment Setup")
+        Map.entry("s38", "Recurring Payment Setup"),
+        Map.entry("custom", "Custom Service Request")
     );
 
     public static String getNameById(String id) {
