@@ -51,7 +51,6 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/contact").permitAll()
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/api/bookings/**").hasRole("ADMIN")
                 .requestMatchers("/api/users").hasRole("ADMIN")
