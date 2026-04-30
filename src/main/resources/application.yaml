@@ -21,3 +21,6 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    db:
+      enabled: true
