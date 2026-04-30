@@ -31,8 +31,13 @@ public class User {
     private String email;
 
     // Stored as BCrypt hash, never exposed in responses
-    @NotBlank
+    // Nullable — Google users have no password
     private String password;
+
+    // Tracks how the user signed up — useful for logic and debugging
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider")
+    private AuthProvider authProvider = AuthProvider.LOCAL;
 
     // Default role is USER, admin is assigned manually
     @Enumerated(EnumType.STRING)
@@ -61,4 +66,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     public enum Role { USER, ADMIN }
+
+    // LOCAL = regular email/password, GOOGLE = Google OAuth2, GITHUB = future
+    public enum AuthProvider { LOCAL, GOOGLE, GITHUB }
 }
