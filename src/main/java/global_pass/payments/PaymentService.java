@@ -1,7 +1,5 @@
 package global_pass.payments;
 
-import global_pass.bookings.BookingEntity;
-import global_pass.bookings.BookingRepository;
 import global_pass.config.ServiceCatalog;
 import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.users.User;
@@ -23,7 +21,6 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
-    private final BookingRepository bookingRepository;
     private final FileStorageService fileStorageService;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -76,20 +73,6 @@ public class PaymentService {
 
         PaymentEntity saved = paymentRepository.save(payment);
 
-        BookingEntity booking = new BookingEntity();
-        booking.setUserId(userId);
-        booking.setUserName(user.getName());
-        booking.setUserEmail(user.getEmail());
-        booking.setServiceId(bookingId);
-        booking.setServiceName(ServiceCatalog.getNameById(bookingId));
-        booking.setAmount(amount);
-        booking.setCurrency("EUR");
-        booking.setStatus("PENDING");
-        booking.setPaymentId(saved.getId());
-        booking.setPaymentNote(note);
-        booking.setOriginalFileName(file.getOriginalFilename());
-        bookingRepository.save(booking);
-
         log.info("Payment uploaded: id={}, user={}, booking={}", saved.getId(), user.getEmail(), ServiceCatalog.getNameById(bookingId));
         return toDto(saved, user);
     }
@@ -114,12 +97,6 @@ public class PaymentService {
         payment.setAdminNote(adminNote);
         PaymentEntity saved = paymentRepository.save(payment);
 
-        bookingRepository.findByPaymentId(paymentId)
-                .ifPresent(b -> {
-                    b.setStatus(status.name());
-                    bookingRepository.save(b);
-                });
-
         log.info("Payment {} status updated to {}", paymentId, status);
         return toDtoWithLookup(saved);
     }
@@ -143,7 +120,6 @@ public class PaymentService {
             log.warn("Failed to delete file for payment {}: {}", paymentId, e.getMessage());
         }
         paymentRepository.delete(payment);
-        bookingRepository.findByPaymentId(paymentId).ifPresent(bookingRepository::delete);
         log.info("Payment cancelled: id={}", paymentId);
     }
 
