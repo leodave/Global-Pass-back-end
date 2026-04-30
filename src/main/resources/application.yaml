@@ -1,3 +1,29 @@
 spring:
   profiles:
-    active: dev
+    active: prod
+
+  application:
+    name: global-pass
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+app:
+  upload-dir: uploads
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      timeout: 3s
+  health:
+    db:
+      enabled: true
+    mail:
+      enabled: false

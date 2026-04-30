@@ -15,5 +15,6 @@ public class UserResponseDto {
     private String email;
     private User.Role role;
     private boolean active;
+    private boolean emailVerified;
     private LocalDateTime createdAt;
 }

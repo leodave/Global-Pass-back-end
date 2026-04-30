@@ -22,14 +22,14 @@ class JwtUtilTest {
 
     @Test
     void generateToken_returnsNonNullToken() {
-        String token = jwtUtil.generateToken("test@mail.com");
+        String token = jwtUtil.generateToken("test@mail.com", "USER");
 
         assertThat(token).isNotNull();
     }
 
     @Test
     void generateToken_returnsValidJwtFormat() {
-        String token = jwtUtil.generateToken("test@mail.com");
+        String token = jwtUtil.generateToken("test@mail.com", "USER");
 
         // JWT has 3 parts separated by dots
         assertThat(token.split("\\.")).hasSize(3);
@@ -39,7 +39,7 @@ class JwtUtilTest {
 
     @Test
     void extractEmail_returnsCorrectEmail() {
-        String token = jwtUtil.generateToken("test@mail.com");
+        String token = jwtUtil.generateToken("test@mail.com", "USER");
 
         String email = jwtUtil.extractEmail(token);
 
@@ -48,8 +48,8 @@ class JwtUtilTest {
 
     @Test
     void extractEmail_differentEmails_returnCorrectEmail() {
-        String token1 = jwtUtil.generateToken("alice@mail.com");
-        String token2 = jwtUtil.generateToken("bob@mail.com");
+        String token1 = jwtUtil.generateToken("alice@mail.com", "USER");
+        String token2 = jwtUtil.generateToken("bob@mail.com", "ADMIN");
 
         assertThat(jwtUtil.extractEmail(token1)).isEqualTo("alice@mail.com");
         assertThat(jwtUtil.extractEmail(token2)).isEqualTo("bob@mail.com");
@@ -59,14 +59,14 @@ class JwtUtilTest {
 
     @Test
     void isTokenValid_validToken_returnsTrue() {
-        String token = jwtUtil.generateToken("test@mail.com");
+        String token = jwtUtil.generateToken("test@mail.com", "USER");
 
         assertThat(jwtUtil.isTokenValid(token)).isTrue();
     }
 
     @Test
     void isTokenValid_tamperedToken_returnsFalse() {
-        String token = jwtUtil.generateToken("test@mail.com");
+        String token = jwtUtil.generateToken("test@mail.com", "USER");
         String tampered = token + "tampered";
 
         assertThat(jwtUtil.isTokenValid(tampered)).isFalse();
@@ -86,7 +86,7 @@ class JwtUtilTest {
     void isTokenValid_expiredToken_returnsFalse() {
         // Set expiration to -1 so the token is already expired
         ReflectionTestUtils.setField(jwtUtil, "expiration", -1L);
-        String expiredToken = jwtUtil.generateToken("test@mail.com");
+        String expiredToken = jwtUtil.generateToken("test@mail.com", "USER");
 
         assertThat(jwtUtil.isTokenValid(expiredToken)).isFalse();
     }
@@ -94,7 +94,7 @@ class JwtUtilTest {
     @Test
     void isTokenValid_tokenSignedWithDifferentSecret_returnsFalse() {
         // Generate token with original secret
-        String token = jwtUtil.generateToken("test@mail.com");
+        String token = jwtUtil.generateToken("test@mail.com", "USER");
 
         // Change the secret to simulate a different server
         ReflectionTestUtils.setField(jwtUtil, "secret", "completely-different-secret-key-32-chars!!");
