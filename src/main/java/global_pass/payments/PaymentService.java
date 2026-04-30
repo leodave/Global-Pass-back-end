@@ -1,6 +1,7 @@
 package global_pass.payments;
 
-import global_pass.config.ServiceCatalog;
+import global_pass.bookings.BookingEntity;
+import global_pass.bookings.BookingRepository;
 import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.users.User;
 import global_pass.users.UserRepository;
@@ -21,6 +22,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
     private final FileStorageService fileStorageService;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -48,12 +50,11 @@ public class PaymentService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
-        if (!ServiceCatalog.exists(bookingId)) {
-            throw new IllegalArgumentException("Unknown service: " + bookingId);
-        }
+        BookingEntity booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown booking: " + bookingId));
 
         String safeName = user.getName().replaceAll("[^a-zA-Z0-9]", "_");
-        String safeService = ServiceCatalog.getNameById(bookingId).replaceAll("[^a-zA-Z0-9]", "_");
+        String safeService = booking.getName().replaceAll("[^a-zA-Z0-9]", "_");
         String ext = getExtension(file.getOriginalFilename());
         String storedFileName = safeName + "_" + safeService + "_" + System.currentTimeMillis() + ext;
         String storedPath = fileStorageService.store(file, "payments", storedFileName);
@@ -63,7 +64,7 @@ public class PaymentService {
         payment.setUserName(user.getName());
         payment.setUserEmail(user.getEmail());
         payment.setBookingId(bookingId);
-        payment.setBookingName(ServiceCatalog.getNameById(bookingId));
+        payment.setBookingName(booking.getName());
         payment.setAmount(amount);
         payment.setFileName(storedPath);
         payment.setOriginalFileName(file.getOriginalFilename());
@@ -73,7 +74,7 @@ public class PaymentService {
 
         PaymentEntity saved = paymentRepository.save(payment);
 
-        log.info("Payment uploaded: id={}, user={}, booking={}", saved.getId(), user.getEmail(), ServiceCatalog.getNameById(bookingId));
+        log.info("Payment uploaded: id={}, user={}, booking={}", saved.getId(), user.getEmail(), booking.getName());
         return toDto(saved, user);
     }
 
@@ -134,7 +135,9 @@ public class PaymentService {
         User user = userRepository.findById(payment.getUserId()).orElse(null);
         String oldFileName = payment.getFileName();
         String safeName = user != null ? user.getName().replaceAll("[^a-zA-Z0-9]", "_") : "unknown";
-        String safeService = ServiceCatalog.getNameById(payment.getBookingId()).replaceAll("[^a-zA-Z0-9]", "_");
+        String bookingName = bookingRepository.findById(payment.getBookingId())
+                .map(BookingEntity::getName).orElse("unknown");
+        String safeService = bookingName.replaceAll("[^a-zA-Z0-9]", "_");
         String ext = getExtension(file.getOriginalFilename());
         String storedFileName = safeName + "_" + safeService + "_" + System.currentTimeMillis() + ext;
         String storedPath = fileStorageService.store(file, "payments", storedFileName);
@@ -188,7 +191,7 @@ public class PaymentService {
                 .userName(user != null ? user.getName() : "Unknown")
                 .userEmail(user != null ? user.getEmail() : "Unknown")
                 .bookingId(payment.getBookingId())
-                .bookingName(payment.getBookingName() != null ? payment.getBookingName() : ServiceCatalog.getNameById(payment.getBookingId()))
+                .bookingName(payment.getBookingName() != null ? payment.getBookingName() : "Unknown")
                 .amount(payment.getAmount())
                 .originalFileName(payment.getOriginalFileName())
                 .contentType(payment.getContentType())

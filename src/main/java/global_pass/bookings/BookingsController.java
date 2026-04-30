@@ -18,12 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("public/api/v1/users/{userId}/bookings")
 public class BookingsController {
 
     private IBookingService bookingService;
 
-    @GetMapping
+    @GetMapping("/api/bookings")
+    public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getAllBookingsAdmin() {
+        List<BookingResponseDto> bookings = bookingService.getAllBookings();
+        return ResponseEntity.ok(ApiResponseDto.<List<BookingResponseDto>>builder()
+                .status(200)
+                .message("All bookings retrieved")
+                .data(bookings)
+                .build());
+    }
+
+    @GetMapping("/public/api/v1/users/{userId}/bookings")
     public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getAllBookings(
             @PathVariable Long userId) {
         List<BookingResponseDto> bookings = bookingService.getAllBookingsByUser(userId);
@@ -34,7 +43,7 @@ public class BookingsController {
                 .build());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/public/api/v1/users/{userId}/bookings/{id}")
     public ResponseEntity<ApiResponseDto<BookingResponseDto>> getBookingById(
             @PathVariable Long userId,
             @PathVariable String id) {
@@ -46,7 +55,7 @@ public class BookingsController {
                 .build());
     }
 
-    @PostMapping
+    @PostMapping("/public/api/v1/users/{userId}/bookings")
     public ResponseEntity<ApiResponseDto<BookingResponseDto>> createBooking(
             @PathVariable Long userId,
             @Valid @RequestBody BookingRequestDto request) {
@@ -59,7 +68,7 @@ public class BookingsController {
                         .build());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/public/api/v1/users/{userId}/bookings/{id}")
     public ResponseEntity<ApiResponseDto<BookingResponseDto>> updateBooking(
             @PathVariable Long userId,
             @PathVariable String id,
@@ -72,7 +81,7 @@ public class BookingsController {
                 .build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/public/api/v1/users/{userId}/bookings/{id}")
     public ResponseEntity<ApiResponseDto<Void>> deleteBooking(
             @PathVariable Long userId,
             @PathVariable String id) {

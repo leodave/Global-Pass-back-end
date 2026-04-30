@@ -20,6 +20,14 @@ public class BookingService implements IBookingService {
     private final UserRepository userRepository;
 
     @Override
+    public List<BookingResponseDto> getAllBookings() {
+        log.info("Fetching all bookings (admin)");
+        return bookingRepository.findAll().stream()
+                .map(bookingMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
     public List<BookingResponseDto> getAllBookingsByUser(Long userId) {
         log.info("Fetching all bookings for userId: {}", userId);
         List<BookingResponseDto> bookings = bookingRepository.findAllByUserId(userId)

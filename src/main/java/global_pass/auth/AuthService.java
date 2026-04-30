@@ -23,7 +23,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private  final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     public LoginResponseDto signup(SignupRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -36,7 +37,7 @@ public class AuthService {
         user.setEmailVerified(false);
         User saved = userRepository.save(user);
         // TODO: Send verification email with token
-        log.info("User signed up: {}. Verification token: {}", saved.getEmail(), verificationToken);
+        log.info("User signed up: {}", saved.getEmail());
         String token = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
         return LoginResponseDto.builder()
                 .token(token)
@@ -67,8 +68,8 @@ public class AuthService {
             user.setResetToken(resetToken);
             user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
             userRepository.save(user);
-            // TODO: Send email with reset link containing token
-            log.info("Password reset requested for: {}. Token: {}", email, resetToken);
+            emailService.sendPasswordResetEmail(email, resetToken);
+            log.info("Password reset requested for: {}", email);
         });
     }
 
