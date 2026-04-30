@@ -9,6 +9,7 @@ import global_pass.exception.customUserException.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -20,6 +21,7 @@ public class BookingService implements IBookingService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookings() {
         log.info("Fetching all bookings (admin)");
         return bookingRepository.findAll().stream()
@@ -28,6 +30,7 @@ public class BookingService implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookingsByUser(Long userId) {
         log.info("Fetching all bookings for userId: {}", userId);
         List<BookingResponseDto> bookings = bookingRepository.findAllByUserId(userId)
@@ -39,6 +42,7 @@ public class BookingService implements IBookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingResponseDto getBookingById(Long userId, String id) {
         log.info("Fetching booking with id: {} for userId: {}", id, userId);
         BookingEntity booking = findBookingOrThrow(userId, id);

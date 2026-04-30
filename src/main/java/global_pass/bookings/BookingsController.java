@@ -3,6 +3,7 @@ package global_pass.bookings;
 import java.util.List;
 
 import global_pass.config.ApiResponseDto;
+import global_pass.config.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingsController {
 
     private IBookingService bookingService;
+    private SecurityUtil securityUtil;
 
     @GetMapping("/api/bookings")
     public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getAllBookingsAdmin() {
@@ -32,9 +33,10 @@ public class BookingsController {
                 .build());
     }
 
-    @GetMapping("/public/api/v1/users/{userId}/bookings")
+    @GetMapping("/api/v1/users/{userId}/bookings")
     public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getAllBookings(
             @PathVariable Long userId) {
+        securityUtil.verifyOwnershipOrAdmin(userId);
         List<BookingResponseDto> bookings = bookingService.getAllBookingsByUser(userId);
         return ResponseEntity.ok(ApiResponseDto.<List<BookingResponseDto>>builder()
                 .status(200)
@@ -43,10 +45,11 @@ public class BookingsController {
                 .build());
     }
 
-    @GetMapping("/public/api/v1/users/{userId}/bookings/{id}")
+    @GetMapping("/api/v1/users/{userId}/bookings/{id}")
     public ResponseEntity<ApiResponseDto<BookingResponseDto>> getBookingById(
             @PathVariable Long userId,
             @PathVariable String id) {
+        securityUtil.verifyOwnershipOrAdmin(userId);
         BookingResponseDto booking = bookingService.getBookingById(userId, id);
         return ResponseEntity.ok(ApiResponseDto.<BookingResponseDto>builder()
                 .status(200)
@@ -55,10 +58,11 @@ public class BookingsController {
                 .build());
     }
 
-    @PostMapping("/public/api/v1/users/{userId}/bookings")
+    @PostMapping("/api/v1/users/{userId}/bookings")
     public ResponseEntity<ApiResponseDto<BookingResponseDto>> createBooking(
             @PathVariable Long userId,
             @Valid @RequestBody BookingRequestDto request) {
+        securityUtil.verifyOwnershipOrAdmin(userId);
         BookingResponseDto booking = bookingService.createBooking(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDto.<BookingResponseDto>builder()
@@ -68,11 +72,12 @@ public class BookingsController {
                         .build());
     }
 
-    @PutMapping("/public/api/v1/users/{userId}/bookings/{id}")
+    @PutMapping("/api/v1/users/{userId}/bookings/{id}")
     public ResponseEntity<ApiResponseDto<BookingResponseDto>> updateBooking(
             @PathVariable Long userId,
             @PathVariable String id,
             @Valid @RequestBody BookingRequestDto request) {
+        securityUtil.verifyOwnershipOrAdmin(userId);
         BookingResponseDto booking = bookingService.updateBooking(userId, id, request);
         return ResponseEntity.ok(ApiResponseDto.<BookingResponseDto>builder()
                 .status(200)
@@ -81,10 +86,11 @@ public class BookingsController {
                 .build());
     }
 
-    @DeleteMapping("/public/api/v1/users/{userId}/bookings/{id}")
+    @DeleteMapping("/api/v1/users/{userId}/bookings/{id}")
     public ResponseEntity<ApiResponseDto<Void>> deleteBooking(
             @PathVariable Long userId,
             @PathVariable String id) {
+        securityUtil.verifyOwnershipOrAdmin(userId);
         bookingService.deleteBooking(userId, id);
         return ResponseEntity.ok(ApiResponseDto.<Void>builder()
                 .status(200)

@@ -1,7 +1,6 @@
 package global_pass.auth;
 
 import global_pass.config.ApiResponseDto;
-import global_pass.users.UserResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package global_pass.payments;
 
 import global_pass.config.ApiResponseDto;
-import global_pass.users.UserRepository;
+import global_pass.config.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,24 +22,12 @@ import java.util.List;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final UserRepository userRepository;
-
-    private Long getAuthenticatedUserId() {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"))
-                .getId();
-    }
-
-    private boolean isAdmin() {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-    }
+    private final SecurityUtil securityUtil;
 
     private void verifyPaymentOwnershipOrAdmin(String paymentId) {
-        if (isAdmin()) return;
+        if (securityUtil.isAdmin()) return;
         PaymentEntity payment = paymentService.getPaymentEntity(paymentId);
-        if (!payment.getUserId().equals(getAuthenticatedUserId())) {
+        if (!payment.getUserId().equals(securityUtil.getAuthenticatedUserId())) {
             throw new AccessDeniedException("Access denied");
         }
     }
@@ -53,9 +40,7 @@ public class PaymentController {
             @RequestParam(value = "amount", required = false) Double amount,
             @RequestParam(value = "note", required = false) String note) {
 
-        if (!isAdmin() && !getAuthenticatedUserId().equals(userId)) {
-            throw new AccessDeniedException("Cannot upload payment for another user");
-        }
+        securityUtil.verifyOwnershipOrAdmin(userId);
         PaymentResponseDto payment = paymentService.uploadPayment(userId, bookingId, file, amount, note);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDto.<PaymentResponseDto>builder()
                 .status(201)
@@ -66,9 +51,7 @@ public class PaymentController {
 
     @GetMapping("/my/{userId}")
     public ResponseEntity<ApiResponseDto<List<PaymentResponseDto>>> getMyPayments(@PathVariable Long userId) {
-        if (!isAdmin() && !getAuthenticatedUserId().equals(userId)) {
-            throw new AccessDeniedException("Access denied");
-        }
+        securityUtil.verifyOwnershipOrAdmin(userId);
         List<PaymentResponseDto> payments = paymentService.getPaymentsByUser(userId);
         return ResponseEntity.ok(ApiResponseDto.<List<PaymentResponseDto>>builder()
                 .status(200)
