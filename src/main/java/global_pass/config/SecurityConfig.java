@@ -23,8 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // Security configuration for the application
 @Configuration
@@ -72,10 +74,18 @@ public class SecurityConfig {
             )
 
                  // Add our JWT filter before Spring's default username/password filter
-                //.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // handles Google/Supabase ES256 tokens
                 .oauth2ResourceServer(oauth2 -> oauth2
+                        .bearerTokenResolver(request -> {
+                            // if already authenticated by JwtFilter, skip oauth2 processing
+                            if (request.getAttribute("jwt_authenticated") != null) {
+                                return null; // ← returning null skips BearerTokenAuthenticationFilter
+                            }
+                            // otherwise extract token normally for Google tokens
+                            return new DefaultBearerTokenResolver().resolve(request);
+                        })
                         .jwt(jwt -> jwt.decoder(supabaseDecoder))
                 )
 

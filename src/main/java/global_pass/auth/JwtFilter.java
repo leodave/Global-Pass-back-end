@@ -47,6 +47,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
                     // Register the authentication in the security context so Spring knows the user is authenticated
                     SecurityContextHolder.getContext().setAuthentication(auth);
+
+                    // mark request so BearerTokenAuthenticationFilter skips it
+                    request.setAttribute("jwt_authenticated", true);
                 }
             }
             // if not your token, let oauth2ResourceServer handle it
