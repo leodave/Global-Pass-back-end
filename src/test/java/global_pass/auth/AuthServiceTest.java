@@ -36,6 +36,9 @@ class AuthServiceTest {
     @Mock
     private JwtUtil jwtUtil;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -79,11 +82,12 @@ class AuthServiceTest {
         when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toResponseDto(user)).thenReturn(userResponse);
+        when(jwtUtil.generateToken("john@example.com", "USER")).thenReturn("mock-jwt-token");
 
-        UserResponseDto result = authService.signup(signupRequest);
+        LoginResponseDto result = authService.signup(signupRequest);
 
         assertNotNull(result);
-        assertEquals("john@example.com", result.getEmail());
+        assertEquals("john@example.com", result.getUser().getEmail());
         verify(passwordEncoder).encode("password123");
         verify(userRepository).save(any(User.class));
     }
@@ -101,7 +105,7 @@ class AuthServiceTest {
         when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password123", "hashedPassword")).thenReturn(true);
         when(userMapper.toResponseDto(user)).thenReturn(userResponse);
-        when(jwtUtil.generateToken("john@example.com")).thenReturn("mock-jwt-token");
+        when(jwtUtil.generateToken("john@example.com", "USER")).thenReturn("mock-jwt-token");
 
         LoginResponseDto result = authService.login(loginRequest);
 

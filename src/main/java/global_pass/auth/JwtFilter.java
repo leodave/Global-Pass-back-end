@@ -3,12 +3,15 @@ package global_pass.auth;
 import java.io.IOException;
 import java.util.List;
 
+import global_pass.users.User;
+import global_pass.users.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -38,12 +42,27 @@ public class JwtFilter extends OncePerRequestFilter {
                 // Validate the token
                 if (jwtUtil.isTokenValid(token)) {
 
-                    // Extract email from the token
-                    String email = jwtUtil.extractEmail(token);
+                String email = jwtUtil.extractEmail(token);
+                String role = jwtUtil.extractRole(token);
 
-                    // Create an authentication object with the email and no roles/credentials
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(email, null, List.of());
+                // Reject tokens issued before password change
+                User user = userRepository.findByEmail(email).orElse(null);
+                if (user != null && user.getPasswordChangedAt() != null) {
+                    java.util.Date issuedAt = jwtUtil.extractIssuedAt(token);
+                    java.time.LocalDateTime tokenTime = issuedAt.toInstant()
+                            .atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+                    if (tokenTime.isBefore(user.getPasswordChangedAt())) {
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+                }
+
+                List<SimpleGrantedAuthority> authorities = List.of(
+                        new SimpleGrantedAuthority("ROLE_" + (role != null ? role : "USER"))
+                );
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
 
                     // Register the authentication in the security context so Spring knows the user is authenticated
                     SecurityContextHolder.getContext().setAuthentication(auth);
@@ -52,7 +71,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     request.setAttribute("jwt_authenticated", true);
                 }
             }
-            // if not your token, let oauth2ResourceServer handle it
         }
 
         // Continue to the next filter in the chain regardless of token presence

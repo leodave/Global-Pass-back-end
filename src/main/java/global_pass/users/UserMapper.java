@@ -12,6 +12,11 @@ public interface UserMapper {
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "resetToken", ignore = true)
+    @Mapping(target = "resetTokenExpiry", ignore = true)
+    @Mapping(target = "verificationToken", ignore = true)
+    @Mapping(target = "emailVerified", ignore = true)
+    @Mapping(target = "passwordChangedAt", ignore = true)
     User toEntity(SignupRequestDto dto);
 
     UserResponseDto toResponseDto(User user);

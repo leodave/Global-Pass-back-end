@@ -1,34 +1,79 @@
-Global pass project
+# GlobalPass Backend
 
-Global pass
+Spring Boot 4 REST API with JWT authentication, Supabase PostgreSQL, and Supabase Storage.
 
-User
+## Package Structure
 
-1. View services
-2. Select service
-    1. University application
-    2. Udemy or any course
-    3. Subscription Ai tools, Netflix etc..
-    4. Hotel booking
-    5. Exam fee
-3. Book service with requirements
-    1. Service name
-    2. Login link, with user name password
-    3. Amount
-    4. Currency
-    5. Description on steps to follow
-    6. Any more detailed information required
-4. View booked services
-5. View finalized services
-6. Send Payment proof
-7. Customer support page
+```
+global_pass/
+├── auth/           AuthController, AuthService, JwtUtil, JwtFilter
+├── bookings/       BookingEntity, BookingRepository, BookingController (read-only)
+├── config/         SecurityConfig, ServiceCatalog, H2ConsoleConfig, ApiResponseDto
+├── contact/        ContactController, ContactEntity, ContactRepository
+├── exception/      GlobalExceptionHandler, custom exceptions
+├── payments/       PaymentController, PaymentService, FileStorageService
+└── users/          User, UserController, UserService, UserMapper
+```
 
-Admin
+## API Endpoints
 
-1. View bookings
-2. Select booking
-3. Accept booking - > send notification via email and redirection to app
-4. Reject booking with information -> send notification
-5. Send proof of payment
-6. View users - with their bookings
-7.  testing
+### Auth (public)
+| Method | Endpoint            | Description       |
+|--------|---------------------|-------------------|
+| POST   | `/api/auth/signup`  | Register new user |
+| POST   | `/api/auth/login`   | Login, get JWT    |
+
+### Users (authenticated)
+| Method | Endpoint                    | Description        |
+|--------|-----------------------------|--------------------|
+| GET    | `/api/users/{id}`           | Get user profile   |
+| PUT    | `/api/users/{id}`           | Update profile     |
+| PUT    | `/api/users/{id}/password`  | Change password    |
+
+### Payments (authenticated)
+| Method | Endpoint                       | Description              |
+|--------|--------------------------------|--------------------------|
+| POST   | `/api/payments`                | Upload payment proof     |
+| GET    | `/api/payments/my/{userId}`    | Get user's payments      |
+| GET    | `/api/payments`                | Get all payments (admin) |
+| PUT    | `/api/payments/{id}/status`    | Approve/reject (admin)   |
+| GET    | `/api/payments/{id}/file`      | Download proof file      |
+
+### Bookings (authenticated)
+| Method | Endpoint          | Description                |
+|--------|-------------------|----------------------------|
+| GET    | `/api/bookings`   | Get all bookings (admin)   |
+
+### Contact (public)
+| Method | Endpoint        | Description          |
+|--------|-----------------|----------------------|
+| POST   | `/api/contact`  | Submit contact form  |
+
+## Configuration
+
+### Profiles
+- `dev` — H2 in-memory, local file storage, schema auto-created
+- `prod` — Supabase PostgreSQL, Supabase Storage, schema managed by Hibernate
+
+### Key Properties
+```yaml
+jwt.secret          # JWT signing key
+app.supabase.url    # Supabase project URL
+app.supabase.key    # Supabase service_role JWT key
+app.supabase.bucket # Storage bucket name (default: payments)
+```
+
+## Static Service Catalog
+
+Services are defined in `ServiceCatalog.java` — a static map of 38 service IDs to names. No database table needed. Used by `PaymentService` to validate booking IDs and resolve service names.
+
+## Running
+
+```bash
+mvn clean spring-boot:run
+```
+
+Default profile is `prod` (Supabase). Switch to `dev` for local H2:
+```yaml
+spring.profiles.active: dev
+```

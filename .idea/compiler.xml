@@ -10,8 +10,12 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar" />
         </processorPath>
+<<<<<<< Updated upstream
         <module name="global-pass" />
         <module name="global-pass-backend (1)" />
+=======
+        <module name="global-pass-backend" />
+>>>>>>> Stashed changes
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -22,7 +26,10 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="global-pass" options="-parameters" />
       <module name="global-pass-backend" options="-parameters" />
+<<<<<<< Updated upstream
       <module name="global-pass-backend (1)" options="-parameters" />
+=======
+>>>>>>> Stashed changes
     </option>
   </component>
 </project>

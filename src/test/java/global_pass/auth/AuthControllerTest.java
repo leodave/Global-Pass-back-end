@@ -50,19 +50,19 @@ class AuthControllerTest {
 
     @Test
     void signup_returns201() {
-        when(authService.signup(any(SignupRequestDto.class))).thenReturn(userResponse);
+        when(authService.signup(any(SignupRequestDto.class))).thenReturn(loginResponse);
 
         SignupRequestDto request = new SignupRequestDto();
         request.setName("John");
         request.setEmail("john@example.com");
         request.setPassword("password123");
 
-        ResponseEntity<ApiResponseDto<UserResponseDto>> response = authController.signup(request);
+        ResponseEntity<ApiResponseDto<LoginResponseDto>> response = authController.signup(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(201, response.getBody().getStatus());
         assertEquals("Signup successful", response.getBody().getMessage());
-        assertEquals("john@example.com", response.getBody().getData().getEmail());
+        assertEquals("john@example.com", response.getBody().getData().getUser().getEmail());
     }
 
     @Test
