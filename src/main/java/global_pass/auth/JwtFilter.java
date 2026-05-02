@@ -33,22 +33,38 @@ public class JwtFilter extends OncePerRequestFilter {
             // Strip "Bearer " prefix to get the raw token
             String token = authHeader.substring(7);
 
-            // Validate the token
-            if (jwtUtil.isTokenValid(token)) {
+            // Only process your own HS512 tokens, skip Google/Supabase tokens
+            if (isOwnToken(token)) {
+                // Validate the token
+                if (jwtUtil.isTokenValid(token)) {
 
-                // Extract email from the token
-                String email = jwtUtil.extractEmail(token);
+                    // Extract email from the token
+                    String email = jwtUtil.extractEmail(token);
 
-                // Create an authentication object with the email and no roles/credentials
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(email, null, List.of());
+                    // Create an authentication object with the email and no roles/credentials
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(email, null, List.of());
 
-                // Register the authentication in the security context so Spring knows the user is authenticated
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    // Register the authentication in the security context so Spring knows the user is authenticated
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
+            // if not your token, let oauth2ResourceServer handle it
         }
 
         // Continue to the next filter in the chain regardless of token presence
         filterChain.doFilter(request, response);
+    }
+
+    // Your tokens always have email as subject (not a UUID)
+    private boolean isOwnToken(String token) {
+        try {
+            // Decode header without verification to check algorithm
+            String[] parts = token.split("\\.");
+            String header = new String(java.util.Base64.getUrlDecoder().decode(parts[0]));
+            return header.contains("HS512"); // your tokens use HS512
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -12,4 +12,6 @@ public class OAuthUserInfo {
 
     // the user's email from the JWT claims
     private final String email;
+
+    private final String name;
 }

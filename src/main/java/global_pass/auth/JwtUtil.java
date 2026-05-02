@@ -4,13 +4,16 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 // Utility class for generating and validating JWT tokens
 @Component
+@Slf4j
 public class JwtUtil {
 
     // Secret key
@@ -37,23 +40,34 @@ public class JwtUtil {
     }
 
     // Extracts the email from a valid JWT token
+    // handles both your own tokens (email as subject) and Google/Supabase tokens (email as claim)
     public String extractEmail(String token) {
-        return Jwts.parser()
-                .verifyWith(getKey())           // Use the same key to verify signature
+        Claims claims = Jwts.parser()
+                .verifyWith(getKey())
                 .build()
-                .parseSignedClaims(token)       // Parse and validate the token
-                .getPayload()
-                .getSubject();                  // Get the email we stored as subject
-    }
+                .parseSignedClaims(token)
+                .getPayload();
 
+        // Try email claim first (Google/Supabase tokens)
+        String email = claims.get("email", String.class);
+
+        // Fall back to subject (your own JWT tokens)
+        if (email == null) {
+            email = claims.getSubject();
+        }
+
+        return email;
+    }
     // Returns true if the token is valid, false if expired or tampered
     public boolean isTokenValid(String token) {
-        try {
-            extractEmail(token);    // If this doesn't throw, token is valid
-            return true;
-        } catch (Exception e) {
-            return false;           // Token is expired, malformed, or tampered
-        }
+            try {
+                extractEmail(token);
+                log.info("user with email: {} is making a request", extractEmail(token));
+                return true;
+            } catch (Exception e) {
+                log.error("email couldn't be extracted from token because of {}", e.getMessage());
+                return false;
+            }
     }
 
 }
