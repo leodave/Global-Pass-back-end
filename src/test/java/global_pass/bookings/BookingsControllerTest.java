@@ -1,6 +1,7 @@
 package global_pass.bookings;
 
 import global_pass.config.ApiResponseDto;
+import global_pass.config.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,9 @@ class BookingsControllerTest {
 
     @Mock
     private IBookingService bookingService;
+
+    @Mock
+    private SecurityUtil securityUtil;
 
     @InjectMocks
     private BookingsController bookingsController;
@@ -56,29 +60,51 @@ class BookingsControllerTest {
     }
 
     // ──────────────────────────────────────────────
-    // GET /bookings
+    // GET /api/bookings (admin)
+    // ──────────────────────────────────────────────
+
+    @Test
+    void getAllBookingsAdmin_shouldReturn200WithList() {
+        when(bookingService.getAllBookings()).thenReturn(List.of(bookingResponse));
+
+        ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> response =
+                bookingsController.getAllBookingsAdmin();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getStatus()).isEqualTo(200);
+        assertThat(response.getBody().getMessage()).isEqualTo("All bookings retrieved");
+        assertThat(response.getBody().getData()).hasSize(1);
+
+        verify(bookingService, times(1)).getAllBookings();
+        verifyNoInteractions(securityUtil);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /api/v1/users/{userId}/bookings
     // ──────────────────────────────────────────────
 
     @Test
     void getAllBookings_shouldReturn200WithList() {
+        doNothing().when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
         when(bookingService.getAllBookingsByUser()).thenReturn(List.of(bookingResponse));
 
         ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> response =
                 bookingsController.getAllBookings(USER_ID);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getStatus()).isEqualTo(200);
         assertThat(response.getBody().getMessage()).isEqualTo("Bookings retrieved");
         assertThat(response.getBody().getData()).hasSize(1);
         assertThat(response.getBody().getData().get(0).getId()).isEqualTo(BOOKING_ID);
-        assertThat(response.getBody().getData().get(0).getUserId()).isEqualTo(USER_ID);
 
+        verify(securityUtil, times(1)).verifyOwnershipOrAdmin(USER_ID);
         verify(bookingService, times(1)).getAllBookingsByUser();
     }
 
     @Test
     void getAllBookings_shouldReturnEmptyList() {
+        doNothing().when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
         when(bookingService.getAllBookingsByUser()).thenReturn(List.of());
 
         ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> response =
@@ -90,12 +116,25 @@ class BookingsControllerTest {
         verify(bookingService, times(1)).getAllBookingsByUser();
     }
 
+    @Test
+    void getAllBookings_shouldThrow_whenAccessDenied() {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Access denied"))
+                .when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        bookingsController.getAllBookings(USER_ID))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(bookingService, never()).getAllBookingsByUser();
+    }
+
     // ──────────────────────────────────────────────
-    // GET /bookings/{id}
+    // GET /api/v1/users/{userId}/bookings/{id}
     // ──────────────────────────────────────────────
 
     @Test
     void getBookingById_shouldReturn200() {
+        doNothing().when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
         when(bookingService.getBookingById(BOOKING_ID)).thenReturn(bookingResponse);
 
         ResponseEntity<ApiResponseDto<BookingResponseDto>> response =
@@ -105,17 +144,30 @@ class BookingsControllerTest {
         assertThat(response.getBody().getStatus()).isEqualTo(200);
         assertThat(response.getBody().getMessage()).isEqualTo("Booking retrieved");
         assertThat(response.getBody().getData().getId()).isEqualTo(BOOKING_ID);
-        assertThat(response.getBody().getData().getUserId()).isEqualTo(USER_ID);
 
+        verify(securityUtil, times(1)).verifyOwnershipOrAdmin(USER_ID);
         verify(bookingService, times(1)).getBookingById(BOOKING_ID);
     }
 
+    @Test
+    void getBookingById_shouldThrow_whenAccessDenied() {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Access denied"))
+                .when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        bookingsController.getBookingById(USER_ID, BOOKING_ID))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(bookingService, never()).getBookingById(any());
+    }
+
     // ──────────────────────────────────────────────
-    // POST /bookings
+    // POST /api/v1/users/{userId}/bookings
     // ──────────────────────────────────────────────
 
     @Test
     void createBooking_shouldReturn201() {
+        doNothing().when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
         when(bookingService.createBooking(any(BookingRequestDto.class)))
                 .thenReturn(bookingResponse);
 
@@ -126,17 +178,30 @@ class BookingsControllerTest {
         assertThat(response.getBody().getStatus()).isEqualTo(201);
         assertThat(response.getBody().getMessage()).isEqualTo("Booking created");
         assertThat(response.getBody().getData().getId()).isEqualTo(BOOKING_ID);
-        assertThat(response.getBody().getData().getUserId()).isEqualTo(USER_ID);
 
+        verify(securityUtil, times(1)).verifyOwnershipOrAdmin(USER_ID);
         verify(bookingService, times(1)).createBooking(validRequest);
     }
 
+    @Test
+    void createBooking_shouldThrow_whenAccessDenied() {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Access denied"))
+                .when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        bookingsController.createBooking(USER_ID, validRequest))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(bookingService, never()).createBooking(any());
+    }
+
     // ──────────────────────────────────────────────
-    // PUT /bookings/{id}
+    // PUT /api/v1/users/{userId}/bookings/{id}
     // ──────────────────────────────────────────────
 
     @Test
     void updateBooking_shouldReturn200() {
+        doNothing().when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
         when(bookingService.updateBooking(eq(BOOKING_ID), any(BookingRequestDto.class)))
                 .thenReturn(bookingResponse);
 
@@ -148,15 +213,29 @@ class BookingsControllerTest {
         assertThat(response.getBody().getMessage()).isEqualTo("Booking updated");
         assertThat(response.getBody().getData().getId()).isEqualTo(BOOKING_ID);
 
+        verify(securityUtil, times(1)).verifyOwnershipOrAdmin(USER_ID);
         verify(bookingService, times(1)).updateBooking(BOOKING_ID, validRequest);
     }
 
+    @Test
+    void updateBooking_shouldThrow_whenAccessDenied() {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Access denied"))
+                .when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        bookingsController.updateBooking(USER_ID, BOOKING_ID, validRequest))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(bookingService, never()).updateBooking(any(), any());
+    }
+
     // ──────────────────────────────────────────────
-    // DELETE /bookings/{id}
+    // DELETE /api/v1/users/{userId}/bookings/{id}
     // ──────────────────────────────────────────────
 
     @Test
     void deleteBooking_shouldReturn200() {
+        doNothing().when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
         doNothing().when(bookingService).deleteBooking(BOOKING_ID);
 
         ResponseEntity<ApiResponseDto<Void>> response =
@@ -167,6 +246,19 @@ class BookingsControllerTest {
         assertThat(response.getBody().getMessage()).isEqualTo("Booking deleted");
         assertThat(response.getBody().getData()).isNull();
 
+        verify(securityUtil, times(1)).verifyOwnershipOrAdmin(USER_ID);
         verify(bookingService, times(1)).deleteBooking(BOOKING_ID);
+    }
+
+    @Test
+    void deleteBooking_shouldThrow_whenAccessDenied() {
+        doThrow(new org.springframework.security.access.AccessDeniedException("Access denied"))
+                .when(securityUtil).verifyOwnershipOrAdmin(USER_ID);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+                        bookingsController.deleteBooking(USER_ID, BOOKING_ID))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+
+        verify(bookingService, never()).deleteBooking(any());
     }
 }

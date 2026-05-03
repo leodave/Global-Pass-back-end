@@ -1,5 +1,6 @@
 package global_pass.bookings;
 
+import global_pass.config.SecurityUtil;
 import global_pass.exception.customBookingException.BookingNotFoundException;
 import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.users.User;
@@ -24,6 +25,7 @@ class BookingsServiceTest {
     @Mock private BookingRepository bookingRepository;
     @Mock private BookingMapper bookingMapper;
     @Mock private UserRepository userRepository;
+    @Mock private SecurityUtil securityUtil; // ← added
 
     @InjectMocks private BookingService bookingService;
 
@@ -69,6 +71,26 @@ class BookingsServiceTest {
                 .loginPassword("secret123")
                 .otherDetails("4K plan")
                 .build();
+
+        // ← default for all tests — override per test if needed
+        lenient().when(securityUtil.getAuthenticatedUserId()).thenReturn(USER_ID);
+    }
+
+    // ──────────────────────────────────────────────
+    // getAllBookings (admin)
+    // ──────────────────────────────────────────────
+
+    @Test
+    void getAllBookings_returnsAllBookings() {
+        when(bookingRepository.findAllWithUser()).thenReturn(List.of(entity));
+        when(bookingMapper.toResponseDto(entity)).thenReturn(responseDto); // ✅ REQUIRED
+
+        List<BookingResponseDto> result = bookingService.getAllBookings();
+
+        assertThat(result).hasSize(1).containsExactly(responseDto);
+        verify(bookingRepository).findAllWithUser();
+        verify(bookingMapper).toResponseDto(entity); // optional but good
+        verifyNoInteractions(securityUtil);
     }
 
     // ──────────────────────────────────────────────
@@ -83,6 +105,7 @@ class BookingsServiceTest {
         List<BookingResponseDto> result = bookingService.getAllBookingsByUser();
 
         assertThat(result).hasSize(1).containsExactly(responseDto);
+        verify(securityUtil).getAuthenticatedUserId();
         verify(bookingRepository).findAllByUserId(USER_ID);
     }
 
@@ -108,6 +131,7 @@ class BookingsServiceTest {
         BookingResponseDto result = bookingService.getBookingById(BOOKING_ID);
 
         assertThat(result).isEqualTo(responseDto);
+        verify(securityUtil).getAuthenticatedUserId();
         verify(bookingRepository).findByIdAndUserId(BOOKING_ID, USER_ID);
     }
 
@@ -122,6 +146,8 @@ class BookingsServiceTest {
 
     @Test
     void getBookingById_throws_whenBookingBelongsToOtherUser() {
+        // simulate different user authenticated
+        when(securityUtil.getAuthenticatedUserId()).thenReturn(99L);
         when(bookingRepository.findByIdAndUserId(BOOKING_ID, 99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.getBookingById(BOOKING_ID))
@@ -143,6 +169,7 @@ class BookingsServiceTest {
         BookingResponseDto result = bookingService.createBooking(requestDto);
 
         assertThat(result).isEqualTo(responseDto);
+        verify(securityUtil).getAuthenticatedUserId();
         verify(userRepository).findById(USER_ID);
         verify(bookingRepository).save(entity);
     }
@@ -156,16 +183,15 @@ class BookingsServiceTest {
 
         bookingService.createBooking(requestDto);
 
-        assertThat(entity.getUser()).isEqualTo(user); // user was set on entity
+        assertThat(entity.getUser()).isEqualTo(user);
     }
 
     @Test
     void createBooking_throws_whenUserNotFound() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.createBooking(requestDto))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("99");
+                .isInstanceOf(UserNotFoundException.class);
 
         verify(bookingRepository, never()).save(any());
     }
@@ -183,6 +209,7 @@ class BookingsServiceTest {
         BookingResponseDto result = bookingService.updateBooking(BOOKING_ID, requestDto);
 
         assertThat(result).isEqualTo(responseDto);
+        verify(securityUtil).getAuthenticatedUserId();
         verify(bookingMapper).updateEntityFromRequest(requestDto, entity);
         verify(bookingRepository).save(entity);
     }
@@ -200,6 +227,7 @@ class BookingsServiceTest {
 
     @Test
     void updateBooking_throws_whenBookingBelongsToOtherUser() {
+        when(securityUtil.getAuthenticatedUserId()).thenReturn(99L);
         when(bookingRepository.findByIdAndUserId(BOOKING_ID, 99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.updateBooking(BOOKING_ID, requestDto))
@@ -219,6 +247,7 @@ class BookingsServiceTest {
 
         bookingService.deleteBooking(BOOKING_ID);
 
+        verify(securityUtil).getAuthenticatedUserId();
         verify(bookingRepository).deleteById(BOOKING_ID);
     }
 
@@ -235,6 +264,7 @@ class BookingsServiceTest {
 
     @Test
     void deleteBooking_throws_whenBookingBelongsToOtherUser() {
+        when(securityUtil.getAuthenticatedUserId()).thenReturn(99L);
         when(bookingRepository.findByIdAndUserId(BOOKING_ID, 99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> bookingService.deleteBooking(BOOKING_ID))

@@ -62,14 +62,6 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponseDto<Void>> handleUnreadableMessage(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body(ApiResponseDto.<Void>builder()
-                .status(400)
-                .message("Malformed request body")
-                .build());
-    }
-
     @ExceptionHandler(BookingNotFoundException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleBookingNotFound(BookingNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponseDto.<Void>builder()
