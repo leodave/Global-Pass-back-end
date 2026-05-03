@@ -50,12 +50,6 @@ public class BookingEntity {
     @Column(name = "login_password")
     private String loginPassword;
 
-    @Column(name = "amount")
-    private Double amount;
-
-    @Column(name = "currency")
-    private String currency;
-
     @Column(name = "other_details")
     private String otherDetails;
 
