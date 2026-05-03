@@ -40,8 +40,6 @@ class BookingsControllerTest {
                 .pageLink("https://example.com")
                 .loginUsername("user123")
                 .loginPassword("pass123")
-                .amount(99.99)
-                .currency("USD")
                 .otherDetails("Some details")
                 .build();
 
@@ -53,8 +51,6 @@ class BookingsControllerTest {
                 .pageLink("https://example.com")
                 .loginUsername("user123")
                 .loginPassword("pass123")
-                .amount(99.99)
-                .currency("USD")
                 .otherDetails("Some details")
                 .build();
     }
@@ -65,7 +61,7 @@ class BookingsControllerTest {
 
     @Test
     void getAllBookings_shouldReturn200WithList() {
-        when(bookingService.getAllBookingsByUser(USER_ID)).thenReturn(List.of(bookingResponse));
+        when(bookingService.getAllBookingsByUser()).thenReturn(List.of(bookingResponse));
 
         ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> response =
                 bookingsController.getAllBookings(USER_ID);
@@ -78,12 +74,12 @@ class BookingsControllerTest {
         assertThat(response.getBody().getData().get(0).getId()).isEqualTo(BOOKING_ID);
         assertThat(response.getBody().getData().get(0).getUserId()).isEqualTo(USER_ID);
 
-        verify(bookingService, times(1)).getAllBookingsByUser(USER_ID);
+        verify(bookingService, times(1)).getAllBookingsByUser();
     }
 
     @Test
     void getAllBookings_shouldReturnEmptyList() {
-        when(bookingService.getAllBookingsByUser(USER_ID)).thenReturn(List.of());
+        when(bookingService.getAllBookingsByUser()).thenReturn(List.of());
 
         ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> response =
                 bookingsController.getAllBookings(USER_ID);
@@ -91,7 +87,7 @@ class BookingsControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData()).isEmpty();
 
-        verify(bookingService, times(1)).getAllBookingsByUser(USER_ID);
+        verify(bookingService, times(1)).getAllBookingsByUser();
     }
 
     // ──────────────────────────────────────────────
@@ -100,7 +96,7 @@ class BookingsControllerTest {
 
     @Test
     void getBookingById_shouldReturn200() {
-        when(bookingService.getBookingById(USER_ID, BOOKING_ID)).thenReturn(bookingResponse);
+        when(bookingService.getBookingById(BOOKING_ID)).thenReturn(bookingResponse);
 
         ResponseEntity<ApiResponseDto<BookingResponseDto>> response =
                 bookingsController.getBookingById(USER_ID, BOOKING_ID);
@@ -111,7 +107,7 @@ class BookingsControllerTest {
         assertThat(response.getBody().getData().getId()).isEqualTo(BOOKING_ID);
         assertThat(response.getBody().getData().getUserId()).isEqualTo(USER_ID);
 
-        verify(bookingService, times(1)).getBookingById(USER_ID, BOOKING_ID);
+        verify(bookingService, times(1)).getBookingById(BOOKING_ID);
     }
 
     // ──────────────────────────────────────────────
@@ -120,7 +116,7 @@ class BookingsControllerTest {
 
     @Test
     void createBooking_shouldReturn201() {
-        when(bookingService.createBooking(eq(USER_ID), any(BookingRequestDto.class)))
+        when(bookingService.createBooking(any(BookingRequestDto.class)))
                 .thenReturn(bookingResponse);
 
         ResponseEntity<ApiResponseDto<BookingResponseDto>> response =
@@ -132,7 +128,7 @@ class BookingsControllerTest {
         assertThat(response.getBody().getData().getId()).isEqualTo(BOOKING_ID);
         assertThat(response.getBody().getData().getUserId()).isEqualTo(USER_ID);
 
-        verify(bookingService, times(1)).createBooking(USER_ID, validRequest);
+        verify(bookingService, times(1)).createBooking(validRequest);
     }
 
     // ──────────────────────────────────────────────
@@ -141,7 +137,7 @@ class BookingsControllerTest {
 
     @Test
     void updateBooking_shouldReturn200() {
-        when(bookingService.updateBooking(eq(USER_ID), eq(BOOKING_ID), any(BookingRequestDto.class)))
+        when(bookingService.updateBooking(eq(BOOKING_ID), any(BookingRequestDto.class)))
                 .thenReturn(bookingResponse);
 
         ResponseEntity<ApiResponseDto<BookingResponseDto>> response =
@@ -152,7 +148,7 @@ class BookingsControllerTest {
         assertThat(response.getBody().getMessage()).isEqualTo("Booking updated");
         assertThat(response.getBody().getData().getId()).isEqualTo(BOOKING_ID);
 
-        verify(bookingService, times(1)).updateBooking(USER_ID, BOOKING_ID, validRequest);
+        verify(bookingService, times(1)).updateBooking(BOOKING_ID, validRequest);
     }
 
     // ──────────────────────────────────────────────
@@ -161,7 +157,7 @@ class BookingsControllerTest {
 
     @Test
     void deleteBooking_shouldReturn200() {
-        doNothing().when(bookingService).deleteBooking(USER_ID, BOOKING_ID);
+        doNothing().when(bookingService).deleteBooking(BOOKING_ID);
 
         ResponseEntity<ApiResponseDto<Void>> response =
                 bookingsController.deleteBooking(USER_ID, BOOKING_ID);
@@ -171,6 +167,6 @@ class BookingsControllerTest {
         assertThat(response.getBody().getMessage()).isEqualTo("Booking deleted");
         assertThat(response.getBody().getData()).isNull();
 
-        verify(bookingService, times(1)).deleteBooking(USER_ID, BOOKING_ID);
+        verify(bookingService, times(1)).deleteBooking(BOOKING_ID);
     }
 }

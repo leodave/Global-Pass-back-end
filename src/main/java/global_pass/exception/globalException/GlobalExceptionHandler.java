@@ -1,10 +1,14 @@
 package global_pass.exception.globalException;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import global_pass.exception.customBookingException.BookingNotFoundException;
 import global_pass.exception.customUserException.EmailAlreadyExistsException;
 import global_pass.exception.customUserException.InvalidPasswordException;
 import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.config.ApiResponseDto;
+import global_pass.payments.PaymentStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +84,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponseDto.<Void>builder()
                 .status(400)
                 .message(ex.getMessage())
+                .build());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponseDto<Void>> handleInvalidEnum(HttpMessageNotReadableException ex) {
+        String message = "Invalid value. Accepted values are: "
+                + Arrays.stream(PaymentStatus.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity.badRequest().body(ApiResponseDto.<Void>builder()
+                .status(400)
+                .message(message)
                 .build());
     }
 

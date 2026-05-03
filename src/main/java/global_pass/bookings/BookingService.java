@@ -2,16 +2,17 @@ package global_pass.bookings;
 
 import java.util.List;
 
+import global_pass.config.SecurityUtil;
 import global_pass.exception.customBookingException.BookingNotFoundException;
 import global_pass.users.User;
 import global_pass.users.UserRepository;
 import global_pass.exception.customUserException.UserNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class BookingService implements IBookingService {
@@ -19,19 +20,22 @@ public class BookingService implements IBookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final UserRepository userRepository;
+    private final SecurityUtil securityUtil;
 
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookings() {
         log.info("Fetching all bookings (admin)");
-        return bookingRepository.findAll().stream()
+        return bookingRepository.findAllWithUser()
+                .stream()
                 .map(bookingMapper::toResponseDto)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponseDto> getAllBookingsByUser(Long userId) {
+    public List<BookingResponseDto> getAllBookingsByUser() {
+        Long userId = securityUtil.getAuthenticatedUserId();
         log.info("Fetching all bookings for userId: {}", userId);
         List<BookingResponseDto> bookings = bookingRepository.findAllByUserId(userId)
                 .stream()
@@ -43,14 +47,16 @@ public class BookingService implements IBookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public BookingResponseDto getBookingById(Long userId, String id) {
+    public BookingResponseDto getBookingById(String id) {
+        Long userId = securityUtil.getAuthenticatedUserId();
         log.info("Fetching booking with id: {} for userId: {}", id, userId);
         BookingEntity booking = findBookingOrThrow(userId, id);
         return bookingMapper.toResponseDto(booking);
     }
 
     @Override
-    public BookingResponseDto createBooking(Long userId, BookingRequestDto request) {
+    public BookingResponseDto createBooking(BookingRequestDto request) {
+        Long userId = securityUtil.getAuthenticatedUserId();
         log.info("Creating booking for userId: {}", userId);
         User user = findUserOrThrow(userId);
         BookingEntity entity = bookingMapper.toEntity(request);
@@ -61,7 +67,8 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public BookingResponseDto updateBooking(Long userId, String id, BookingRequestDto request) {
+    public BookingResponseDto updateBooking(String id, BookingRequestDto request) {
+        Long userId = securityUtil.getAuthenticatedUserId();
         log.info("Updating booking with id: {} for userId: {}", id, userId);
         BookingEntity existing = findBookingOrThrow(userId, id);
         bookingMapper.updateEntityFromRequest(request, existing);
@@ -71,7 +78,8 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public void deleteBooking(Long userId, String id) {
+    public void deleteBooking(String id) {
+        Long userId = securityUtil.getAuthenticatedUserId();
         log.info("Deleting booking with id: {} for userId: {}", id, userId);
         findBookingOrThrow(userId, id);
         bookingRepository.deleteById(id);

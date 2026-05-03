@@ -24,11 +24,6 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().startsWith("/h2-console");
-    }
-
-    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -42,8 +37,10 @@ public class JwtFilter extends OncePerRequestFilter {
             // Strip "Bearer " prefix to get the raw token
             String token = authHeader.substring(7);
 
-            // Validate the token
-            if (jwtUtil.isTokenValid(token)) {
+            // Only process your own HS512 tokens, skip Google/Supabase tokens
+            if (isOwnToken(token)) {
+                // Validate the token
+                if (jwtUtil.isTokenValid(token)) {
 
                 String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
@@ -67,12 +64,28 @@ public class JwtFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(email, null, authorities);
 
-                // Register the authentication in the security context so Spring knows the user is authenticated
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                    // Register the authentication in the security context so Spring knows the user is authenticated
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+
+                    // mark request so BearerTokenAuthenticationFilter skips it
+                    request.setAttribute("jwt_authenticated", true);
+                }
             }
         }
 
         // Continue to the next filter in the chain regardless of token presence
         filterChain.doFilter(request, response);
+    }
+
+    // Your tokens always have email as subject (not a UUID)
+    private boolean isOwnToken(String token) {
+        try {
+            // Decode header without verification to check algorithm
+            String[] parts = token.split("\\.");
+            String header = new String(java.util.Base64.getUrlDecoder().decode(parts[0]));
+            return header.contains("HS512"); // your tokens use HS512
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

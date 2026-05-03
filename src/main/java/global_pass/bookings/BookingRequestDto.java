@@ -36,14 +36,6 @@ public class BookingRequestDto {
     @NotBlank(message = "Login password is required")
     private String loginPassword;
 
-    @NotNull(message = "Amount is required")
-    @Positive(message = "Amount must be a positive value")
-    private Double amount;
-
-    @NotBlank(message = "Currency is required")
-    @Size(min = 3, max = 3, message = "Currency must be a 3-letter ISO code (e.g. USD, EUR)")
-    private String currency;
-
     @Size(max = 1000, message = "Other details cannot exceed 1000 characters")
     private String otherDetails;
 }

@@ -13,7 +13,5 @@ public class BookingResponseDto {
     private String pageLink;
     private String loginUsername;
     private String loginPassword;
-    private Double amount;
-    private String currency;
     private String otherDetails;
 }
