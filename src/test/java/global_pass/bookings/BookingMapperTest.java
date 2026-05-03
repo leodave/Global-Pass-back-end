@@ -24,8 +24,6 @@ class BookingMapperTest {
         assertThat(entity.getPageLink()).isEqualTo(request.getPageLink());
         assertThat(entity.getLoginUsername()).isEqualTo(request.getLoginUsername());
         assertThat(entity.getLoginPassword()).isEqualTo(request.getLoginPassword());
-        assertThat(entity.getAmount()).isEqualTo(request.getAmount());
-        assertThat(entity.getCurrency()).isEqualTo(request.getCurrency());
         assertThat(entity.getOtherDetails()).isEqualTo(request.getOtherDetails());
     }
 
@@ -59,8 +57,6 @@ class BookingMapperTest {
                 .pageLink("https://disneyplus.com")
                 .loginUsername("newuser@mail.com")
                 .loginPassword("newpass123")
-                .amount(8.99)
-                .currency("EUR")
                 .otherDetails("Basic plan")
                 .build();
 
@@ -71,8 +67,6 @@ class BookingMapperTest {
         assertThat(existing.getPageLink()).isEqualTo("https://disneyplus.com");
         assertThat(existing.getLoginUsername()).isEqualTo("newuser@mail.com");
         assertThat(existing.getLoginPassword()).isEqualTo("newpass123");
-        assertThat(existing.getAmount()).isEqualTo(8.99);
-        assertThat(existing.getCurrency()).isEqualTo("EUR");
         assertThat(existing.getOtherDetails()).isEqualTo("Basic plan");
     }
 
@@ -108,8 +102,6 @@ class BookingMapperTest {
         assertThat(dto.getPageLink()).isEqualTo(entity.getPageLink());
         assertThat(dto.getLoginUsername()).isEqualTo(entity.getLoginUsername());
         assertThat(dto.getLoginPassword()).isEqualTo(entity.getLoginPassword());
-        assertThat(dto.getAmount()).isEqualTo(entity.getAmount());
-        assertThat(dto.getCurrency()).isEqualTo(entity.getCurrency());
         assertThat(dto.getOtherDetails()).isEqualTo(entity.getOtherDetails());
     }
 
@@ -141,8 +133,6 @@ class BookingMapperTest {
         entity.setPageLink("https://netflix.com");
         entity.setLoginUsername("user@mail.com");
         entity.setLoginPassword("secret123");
-        entity.setAmount(15.99);
-        entity.setCurrency("USD");
         entity.setOtherDetails("4K plan");
         return entity;
     }
@@ -154,8 +144,6 @@ class BookingMapperTest {
                 .pageLink("https://netflix.com")
                 .loginUsername("user@mail.com")
                 .loginPassword("secret123")
-                .amount(15.99)
-                .currency("USD")
                 .otherDetails("4K plan")
                 .build();
     }

@@ -40,8 +40,6 @@ class BookingsControllerTest {
                 .pageLink("https://example.com")
                 .loginUsername("user123")
                 .loginPassword("pass123")
-                .amount(99.99)
-                .currency("USD")
                 .otherDetails("Some details")
                 .build();
 
@@ -53,8 +51,6 @@ class BookingsControllerTest {
                 .pageLink("https://example.com")
                 .loginUsername("user123")
                 .loginPassword("pass123")
-                .amount(99.99)
-                .currency("USD")
                 .otherDetails("Some details")
                 .build();
     }

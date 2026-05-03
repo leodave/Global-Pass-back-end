@@ -3,19 +3,16 @@ package global_pass.payments;
 import global_pass.bookings.BookingEntity;
 import global_pass.bookings.BookingRepository;
 import global_pass.config.SecurityUtil;
-import global_pass.exception.customUserException.UserNotFoundException;
 import global_pass.users.User;
 import global_pass.users.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
