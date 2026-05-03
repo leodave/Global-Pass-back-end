@@ -37,7 +37,7 @@ public class BookingsController {
     public ResponseEntity<ApiResponseDto<List<BookingResponseDto>>> getAllBookings(
             @PathVariable Long userId) {
         securityUtil.verifyOwnershipOrAdmin(userId);
-        List<BookingResponseDto> bookings = bookingService.getAllBookingsByUser(userId);
+        List<BookingResponseDto> bookings = bookingService.getAllBookingsByUser();
         return ResponseEntity.ok(ApiResponseDto.<List<BookingResponseDto>>builder()
                 .status(200)
                 .message("Bookings retrieved")
@@ -50,7 +50,7 @@ public class BookingsController {
             @PathVariable Long userId,
             @PathVariable String id) {
         securityUtil.verifyOwnershipOrAdmin(userId);
-        BookingResponseDto booking = bookingService.getBookingById(userId, id);
+        BookingResponseDto booking = bookingService.getBookingById(id);
         return ResponseEntity.ok(ApiResponseDto.<BookingResponseDto>builder()
                 .status(200)
                 .message("Booking retrieved")
@@ -63,7 +63,7 @@ public class BookingsController {
             @PathVariable Long userId,
             @Valid @RequestBody BookingRequestDto request) {
         securityUtil.verifyOwnershipOrAdmin(userId);
-        BookingResponseDto booking = bookingService.createBooking(userId, request);
+        BookingResponseDto booking = bookingService.createBooking(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDto.<BookingResponseDto>builder()
                         .status(201)
@@ -78,7 +78,7 @@ public class BookingsController {
             @PathVariable String id,
             @Valid @RequestBody BookingRequestDto request) {
         securityUtil.verifyOwnershipOrAdmin(userId);
-        BookingResponseDto booking = bookingService.updateBooking(userId, id, request);
+        BookingResponseDto booking = bookingService.updateBooking(id, request);
         return ResponseEntity.ok(ApiResponseDto.<BookingResponseDto>builder()
                 .status(200)
                 .message("Booking updated")
@@ -91,7 +91,7 @@ public class BookingsController {
             @PathVariable Long userId,
             @PathVariable String id) {
         securityUtil.verifyOwnershipOrAdmin(userId);
-        bookingService.deleteBooking(userId, id);
+        bookingService.deleteBooking(id);
         return ResponseEntity.ok(ApiResponseDto.<Void>builder()
                 .status(200)
                 .message("Booking deleted")
